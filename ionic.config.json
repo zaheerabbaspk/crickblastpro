@@ -1,0 +1,7 @@
+{
+  "name": "crickblastpro",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
