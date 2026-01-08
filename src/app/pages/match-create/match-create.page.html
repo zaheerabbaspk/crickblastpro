@@ -1,0 +1,200 @@
+<ion-content>
+    <div class="max-w-5xl mx-auto space-y-8 pb-20">
+        <!-- Header with Step Progress -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="flex items-center gap-4">
+                <a [routerLink]="['/dashboard']"
+                    class="w-12 h-12 flex items-center justify-center rounded-2xl bg-brand-accent text-brand-white hover:bg-brand-accent/80 transition-all">
+                    <ion-icon name="arrow-back-outline" class="text-2xl"></ion-icon>
+                </a>
+                <div>
+                    <h1 class="text-2xl font-bold">New Match</h1>
+                    <p class="text-brand-white/50 text-sm">Step {{ currentStep() }} of 4</p>
+                </div>
+            </div>
+
+            <!-- Progressive Stepper -->
+            <div class="flex items-center gap-2">
+                @for (i of [1,2,3,4]; track i) {
+                <div class="h-1.5 w-12 rounded-full transition-all duration-300"
+                    [class.bg-brand-red]="currentStep() >= i" [class.bg-brand-white/10]="currentStep() < i"></div>
+                }
+            </div>
+        </div>
+
+        <!-- Step Content -->
+        <div
+            class="bg-brand-accent/30 p-8 md:p-12 rounded-[50px] border border-brand-white/5 min-h-[500px] flex flex-col">
+
+            <!-- Step 1: Configuration -->
+            @if (currentStep() === 1) {
+            <div class="space-y-8">
+                <div class="space-y-2">
+                    <h2 class="text-3xl font-black">MATCH CONFIG</h2>
+                    <p class="text-brand-white/50">Basic details of the face-off</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <app-input label="Match Name" placeholder="e.g. Sunday League Final"
+                        [(value)]="matchData.name"></app-input>
+
+                    <div class="space-y-3">
+                        <label class="text-sm font-medium text-brand-white/70 px-1">Overs Per Innings</label>
+                        <div class="flex items-center gap-4">
+                            <input type="range" min="1" max="50" [(ngModel)]="matchData.overs"
+                                class="flex-1 accent-brand-red">
+                            <span class="text-2xl font-bold w-12 text-center text-brand-red">{{ matchData.overs
+                                }}</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <label class="text-sm font-medium text-brand-white/70 px-1">Match Format</label>
+                        <div class="grid grid-cols-3 gap-3">
+                            @for (f of ['Friendly', 'League', 'Knockout']; track f) {
+                            <button (click)="matchData.format = $any(f)"
+                                [class]="matchData.format === f ? 'bg-brand-red border-brand-red text-white' : 'bg-brand-dark border-brand-white/10 text-brand-white/50'"
+                                class="h-14 rounded-2xl border font-bold transition-all text-sm">
+                                {{ f }}
+                            </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }
+
+            <!-- Step 2: Team Selection -->
+            @if (currentStep() === 2) {
+            <div class="space-y-8">
+                <div class="space-y-2">
+                    <h2 class="text-3xl font-black text-center">SELECT TEAMS</h2>
+                    <p class="text-brand-white/50 text-center">Who's competing today?</p>
+                </div>
+
+                <div class="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 pt-8">
+                    <div class="w-full md:w-80 flex flex-col items-center gap-6">
+                        <div
+                            class="w-32 h-32 rounded-[40px] bg-brand-dark border-2 border-dashed border-brand-white/20 flex items-center justify-center text-brand-white/30 text-5xl font-black">
+                            @if (matchData.teamAId) {
+                            <span class="text-brand-red">{{ getTeamShortName(matchData.teamAId) }}</span>
+                            } @else {
+                            A
+                            }
+                        </div>
+                        <div class="w-full">
+                            <select [(ngModel)]="matchData.teamAId"
+                                class="w-full h-16 bg-brand-dark border border-brand-white/10 rounded-2xl px-4 text-center font-bold text-brand-white">
+                                <option value="">Select Team A</option>
+                                @for (t of teams(); track t.id) { <option [value]="t.id">{{ t.name }}</option> }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="text-4xl font-black text-brand-red italic opacity-20 hidden md:block">VS</div>
+                    <div class="w-full md:w-80 flex flex-col items-center gap-6">
+                        <div
+                            class="w-32 h-32 rounded-[40px] bg-brand-dark border-2 border-dashed border-brand-white/20 flex items-center justify-center text-brand-white/30 text-5xl font-black">
+                            @if (matchData.teamBId) {
+                            <span class="text-brand-red">{{ getTeamShortName(matchData.teamBId) }}</span>
+                            } @else {
+                            B
+                            }
+                        </div>
+                        <div class="w-full">
+                            <select [(ngModel)]="matchData.teamBId"
+                                class="w-full h-16 bg-brand-dark border border-brand-white/10 rounded-2xl px-4 text-center font-bold text-brand-white">
+                                <option value="">Select Team B</option>
+                                @for (t of teams(); track t.id) { <option [value]="t.id">{{ t.name }}</option> }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }
+
+            <!-- Step 3: Playing XI -->
+            @if (currentStep() === 3) {
+            <div class="space-y-8">
+                <div class="space-y-2">
+                    <h2 class="text-3xl font-black">PLAYING SQUADS</h2>
+                    <p class="text-brand-white/50">Select active players for each team</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    @for (team of ['A', 'B']; track team) {
+                    <div class="space-y-4">
+                        <h3 class="font-bold text-brand-red flex items-center gap-2">
+                            <ion-icon name="shirt-outline"></ion-icon>
+                            @if (team === 'A') {
+                            {{ getTeamName(matchData.teamAId) || 'Team A' }}
+                            } @else {
+                            {{ getTeamName(matchData.teamBId) || 'Team B' }}
+                            }
+                        </h3>
+                        <div
+                            class="bg-brand-dark/50 rounded-3xl p-4 h-[300px] overflow-y-auto space-y-2 border border-brand-white/5">
+                            @for (p of getTeamPlayers(team === 'A' ? matchData.teamAId : matchData.teamBId); track p.id)
+                            {
+                            <div (click)="togglePlayer(team === 'A' ? 'A' : 'B', p.id)"
+                                class="p-4 rounded-2xl flex items-center justify-between cursor-pointer border transition-all"
+                                [class.bg-brand-red/10]="(team === 'A' ? matchData.teamAPlayers : matchData.teamBPlayers).includes(p.id)"
+                                [class.border-brand-red/50]="(team === 'A' ? matchData.teamAPlayers : matchData.teamBPlayers).includes(p.id)"
+                                [class.border-transparent]="!(team === 'A' ? matchData.teamAPlayers : matchData.teamBPlayers).includes(p.id)">
+                                <span class="font-bold text-sm">{{ p.fullName }}</span>
+                                @if ((team === 'A' ? matchData.teamAPlayers : matchData.teamBPlayers).includes(p.id)) {
+                                <ion-icon name="checkmark-circle-outline" class="text-brand-red text-xl"></ion-icon>
+                                }
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+            }
+
+            <!-- Step 4: Metadata -->
+            @if (currentStep() === 4) {
+            <div class="space-y-8">
+                <div class="space-y-2">
+                    <h2 class="text-3xl font-black">FINAL DETAILS</h2>
+                    <p class="text-brand-white/50">Venue and officials</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <app-input label="Venue" icon="location-outline" placeholder="e.g. Lords Cricket Ground"
+                        [(value)]="matchData.venue"></app-input>
+                    <app-input label="Umpires" icon="person-outline" placeholder="e.g. Aleem Dar"
+                        [(value)]="matchData.umpires"></app-input>
+                </div>
+                <div class="p-8 bg-brand-red rounded-3xl mt-10">
+                    <div class="flex items-center gap-6">
+                        <div class="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-4xl">🏆
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold">Ready to Start!</h3>
+                            <p class="text-white/70">Everything is set. Proceed to the toss.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }
+
+            <!-- Bottom Actions -->
+            <div class="mt-auto pt-10 flex items-center justify-between border-t border-brand-white/5">
+                <button (click)="prevStep()" [disabled]="currentStep() === 1"
+                    class="h-14 px-8 rounded-2xl font-bold text-brand-white/50 disabled:opacity-0 flex items-center gap-2">
+                    <ion-icon name="arrow-back-outline"></ion-icon> Back
+                </button>
+                @if (currentStep() < 4) { <button (click)="nextStep()"
+                    class="bg-brand-white text-brand-dark h-14 px-10 rounded-2xl font-black flex items-center gap-2">
+                    Next <ion-icon name="arrow-forward-outline"></ion-icon>
+                    </button>
+                    } @else {
+                    <button (click)="createMatch()"
+                        class="bg-brand-red text-white h-14 px-12 rounded-2xl font-black flex items-center gap-2 shadow-lg shadow-brand-red/20">
+                        Finalize Match <ion-icon name="checkmark-circle-outline"></ion-icon>
+                    </button>
+                    }
+            </div>
+        </div>
+    </div>
+</ion-content>

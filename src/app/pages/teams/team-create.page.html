@@ -1,0 +1,159 @@
+<ion-content>
+    <div class="max-w-4xl mx-auto space-y-8 pb-10">
+        <!-- Header -->
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a [routerLink]="['/teams']"
+                    class="w-12 h-12 flex items-center justify-center rounded-2xl bg-brand-accent text-brand-white hover:bg-brand-accent/80 transition-all">
+                    <ion-icon name="arrow-back-outline" class="text-2xl"></ion-icon>
+                </a>
+                <div>
+                    <h1 class="text-2xl font-bold">Create Team</h1>
+                    <p class="text-brand-white/50 text-sm">Build your team squad</p>
+                </div>
+            </div>
+
+            <button (click)="saveTeam()"
+                class="bg-brand-red text-white h-12 px-8 rounded-2xl flex items-center gap-2 font-bold hover:bg-brand-red/90 transition-all shadow-lg shadow-brand-red/20">
+                <ion-icon name="save-outline" class="text-xl"></ion-icon>
+                <span>Save Team</span>
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column: Team Details -->
+            <div class="lg:col-span-1 space-y-6">
+                <section class="bg-brand-accent/50 p-6 rounded-[40px] border border-brand-white/5 space-y-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-brand-red/10 flex items-center justify-center text-brand-red">
+                            <ion-icon name="shirt-outline" class="text-xl"></ion-icon>
+                        </div>
+                        <h2 class="text-lg font-bold">Team Profile</h2>
+                    </div>
+
+                    <app-input label="Team Name" placeholder="e.g. Mumbai Indians"
+                        [(value)]="teamData.name"></app-input>
+
+                    <app-input label="Short Name" placeholder="e.g. MI" [(value)]="teamData.shortName"></app-input>
+
+                    <div class="space-y-4 pt-4 border-t border-brand-white/5">
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-medium text-brand-white/70 px-1">Captain (Optional)</label>
+                            <select [(ngModel)]="teamData.captainId"
+                                class="bg-brand-dark border border-brand-white/10 rounded-2xl h-14 px-4 text-brand-white outline-none focus:border-brand-red">
+                                <option value="">Select Captain</option>
+                                @for (pid of teamData.players; track pid) {
+                                <option [value]="pid">{{ getPlayerDisplayName(pid) }}</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-medium text-brand-white/70 px-1">Wicketkeeper (Optional)</label>
+                            <select [(ngModel)]="teamData.wicketkeeperId"
+                                class="bg-brand-dark border border-brand-white/10 rounded-2xl h-14 px-4 text-brand-white outline-none focus:border-brand-red">
+                                <option value="">Select Wicketkeeper</option>
+                                @for (pid of teamData.players; track pid) {
+                                <option [value]="pid">{{ getPlayerDisplayName(pid) }}</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Squad Selection -->
+            <div class="lg:col-span-2 space-y-6">
+                <section
+                    class="bg-brand-accent/50 p-6 rounded-[40px] border border-brand-white/5 flex flex-col h-full min-h-[500px]">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-brand-red/10 flex items-center justify-center text-brand-red">
+                                <ion-icon name="people-outline" class="text-xl"></ion-icon>
+                            </div>
+                            <h2 class="text-lg font-bold">Select Squad <span
+                                    class="text-brand-white/30 text-sm font-normal ml-2">({{ teamData.players.length }}
+                                    selected)</span></h2>
+                        </div>
+
+                        <button (click)="showInlinePlayerForm.set(true)"
+                            class="text-brand-red font-bold text-sm hover:underline flex items-center gap-1">
+                            <ion-icon name="add-outline"></ion-icon>
+                            Add New Player
+                        </button>
+                    </div>
+
+                    <!-- Inline Player Form Overlay -->
+                    @if (showInlinePlayerForm()) {
+                    <div class="mb-6 p-6 bg-brand-dark rounded-3xl border border-brand-red/30 space-y-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold">Quick Add Player</h3>
+                            <button (click)="resetInlineForm()" class="text-brand-white/50 hover:text-white">
+                                <ion-icon name="close-outline" class="text-2xl"></ion-icon>
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <app-input placeholder="Full Name" [(value)]="newPlayerData.fullName"></app-input>
+                            <app-input placeholder="Display Name" [(value)]="newPlayerData.displayName"></app-input>
+                        </div>
+
+                        <div class="flex justify-end pt-2">
+                            <button (click)="createPlayerInline()"
+                                class="bg-brand-red text-white h-12 px-6 rounded-xl font-bold hover:bg-brand-red/90">
+                                Create & Add to Squad
+                            </button>
+                        </div>
+                    </div>
+                    }
+
+                    <!-- Search Players -->
+                    <div class="relative mb-6">
+                        <ion-icon name="search-outline"
+                            class="absolute left-4 top-1/2 -translate-y-1/2 text-brand-white/30"></ion-icon>
+                        <input type="text" [placeholder]="'Search from ' + allPlayers().length + ' players...'"
+                            (input)="searchTerm.set($any($event.target).value)"
+                            class="w-full bg-brand-dark border border-brand-white/10 rounded-2xl pl-12 pr-4 h-12 outline-none focus:border-brand-red transition-all">
+                    </div>
+
+                    <!-- Players Picker -->
+                    <div class="flex-1 overflow-y-auto pr-2 space-y-2">
+                        @for (player of filteredPlayers(); track player.id) {
+                        <div (click)="togglePlayerSelection(player.id)"
+                            class="flex items-center gap-4 p-4 rounded-2xl border transition-all cursor-pointer group"
+                            [class.bg-brand-red/10]="isPlayerSelected(player.id)"
+                            [class.border-brand-red/50]="isPlayerSelected(player.id)"
+                            [class.bg-brand-dark/50]="!isPlayerSelected(player.id)"
+                            [class.border-brand-white/5]="!isPlayerSelected(player.id)">
+                            <div class="w-12 h-12 rounded-xl flex items-center justify-center font-bold transition-all text-sm"
+                                [class.bg-brand-red]="isPlayerSelected(player.id)"
+                                [class.text-white]="isPlayerSelected(player.id)"
+                                [class.bg-brand-accent]="!isPlayerSelected(player.id)"
+                                [class.text-brand-white/50]="!isPlayerSelected(player.id)">
+                                @if (isPlayerSelected(player.id)) {
+                                <ion-icon name="checkmark-circle-outline" class="text-xl"></ion-icon>
+                                } @else {
+                                {{ player.displayName[0] | uppercase }}
+                                }
+                            </div>
+
+                            <div class="flex-1">
+                                <p class="font-bold text-sm">{{ player.fullName }}</p>
+                                <p class="text-[10px] text-brand-white/40 uppercase tracking-wider">{{ player.role }} •
+                                    {{ player.battingStyle }}</p>
+                            </div>
+                        </div>
+                        } @empty {
+                        <div class="h-40 flex flex-col items-center justify-center text-center opacity-50">
+                            <ion-icon name="people-outline" class="text-4xl mb-2"></ion-icon>
+                            <p>No players found</p>
+                        </div>
+                        }
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</ion-content>

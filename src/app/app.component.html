@@ -1,3 +1,82 @@
-<ion-app>
-  <ion-router-outlet></ion-router-outlet>
+<ion-app class="bg-brand-dark">
+  <!-- Desktop Sidebar & Main Content -->
+  <div class="flex h-full overflow-hidden">
+
+    <!-- Sidebar (Large Screen) -->
+    <aside class="hidden lg:flex flex-col w-64 bg-brand-accent border-r border-brand-white/10 h-full">
+      <div class="p-6 border-b border-brand-white/10">
+        <h1 class="text-2xl font-bold text-brand-red flex items-center gap-2">
+          <ion-icon name="trophy" class="text-3xl"></ion-icon>
+          <span>CrickBlast<span class="text-brand-white">Pro</span></span>
+        </h1>
+      </div>
+
+      <nav class="flex-1 overflow-y-auto py-4">
+        <div class="px-4 space-y-1">
+          @for (p of appPages; track p.title) {
+          <a [routerLink]="[p.url]" routerLinkActive="bg-brand-red text-white"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl text-brand-white/70 hover:text-white hover:bg-brand-white/5 transition-all duration-200"
+            [routerLinkActiveOptions]="{ exact: true }">
+            <ion-icon [name]="p.icon" class="text-xl"></ion-icon>
+            <span class="font-medium">{{ p.title }}</span>
+          </a>
+          }
+        </div>
+      </nav>
+
+      <div class="p-4 border-t border-brand-white/10">
+        <div class="bg-brand-dark rounded-2xl p-4 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-brand-red flex items-center justify-center text-white font-bold">
+            JD
+          </div>
+          <div class="flex-1 overflow-hidden">
+            <p class="text-sm font-semibold truncate">Admin User</p>
+            <p class="text-xs text-brand-white/50 truncate">Premium Member</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col min-w-0 bg-brand-dark">
+
+      <!-- Header -->
+      <header
+        class="h-16 lg:h-20 flex items-center bg-brand-accent justify-between px-4 lg:px-8 border-b border-brand-white/10 flex-shrink-0">
+        <div class="flex items-center gap-4 lg:hidden">
+          <h1 class="text-xl font-bold text-brand-red">CB<span class="text-brand-white">Pro</span></h1>
+        </div>
+
+        <div class="flex-1 flex items-center justify-center lg:justify-start">
+          <h2 class="text-lg lg:text-xl font-semibold text-brand-white truncate max-w-xs">Dashboard</h2>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button
+            class="w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-xl bg-brand-accent text-brand-white hover:bg-brand-accent/80">
+            <ion-icon name="add-circle" class="text-2xl"></ion-icon>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Content Area -->
+      <div class="flex-1 relative overflow-hidden bg-brand-dark">
+        <ion-router-outlet></ion-router-outlet>
+      </div>
+
+      <!-- Bottom Navigation (Mobile) -->
+      <nav class="lg:hidden h-16 bg-brand-accent border-t border-brand-white/10 px-2 flex-shrink-0">
+        <div class="flex items-center justify-around h-full">
+          @for (p of appPages.slice(0, 5); track p.title) {
+          <a [routerLink]="[p.url]" routerLinkActive="text-brand-red"
+            class="flex flex-col items-center gap-1 text-brand-white/50" [routerLinkActiveOptions]="{ exact: true }">
+            <ion-icon [name]="p.icon" class="text-2xl"></ion-icon>
+            <span class="text-[10px]">{{ p.title }}</span>
+          </a>
+          }
+        </div>
+      </nav>
+
+    </main>
+  </div>
 </ion-app>

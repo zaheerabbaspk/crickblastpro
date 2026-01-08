@@ -1,0 +1,310 @@
+<ion-content>
+    <div class="max-w-6xl mx-auto space-y-6 pb-20 px-4 md:px-0">
+
+        <!-- Match Info & Global Score -->
+        <div class="bg-brand-accent/30 rounded-[40px] border border-brand-white/5 p-6 md:p-8 overflow-hidden relative">
+            <div class="absolute top-0 right-0 p-8 opacity-10">
+                <ion-icon name="stats-chart-outline" class="text-9xl"></ion-icon>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+                <div class="space-y-1">
+                    <p class="text-brand-red font-black uppercase tracking-widest text-xs">LIVE MATCH</p>
+                    <h1 class="text-2xl font-bold">{{ match()?.name }}</h1>
+                    <p class="text-brand-white/40 text-xs">{{ match()?.venue }} • {{ match()?.overs }} Overs</p>
+                </div>
+
+                <div class="flex items-center gap-8 md:gap-16">
+                    <div class="text-center">
+                        <p class="text-brand-white/50 text-[10px] uppercase font-bold mb-1">{{ battingTeam()?.shortName
+                            }} SCORING</p>
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-6xl font-black text-brand-white">{{ inningsState()?.runs }}</span>
+                            <span class="text-4xl font-black text-brand-red">/ {{ inningsState()?.wickets }}</span>
+                        </div>
+                        <p class="text-brand-white/70 font-bold mt-1">Overs {{
+                            liveMatchService.getBallsFormatted(inningsState()?.balls || 0) }}</p>
+                    </div>
+
+                    <div class="hidden lg:block h-20 w-px bg-brand-white/10"></div>
+
+                    <div class="hidden lg:flex flex-col gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-brand-white/30 text-[10px] font-bold uppercase w-12 text-right">CRR</span>
+                            <span class="text-xl font-bold">{{ (inningsState()?.runs || 0) / (inningsState()?.balls ||
+                                1) * 6 | number:'1.2-2' }}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="text-brand-white/30 text-[10px] font-bold uppercase w-12 text-right">EXTRAS</span>
+                            <span class="text-xl font-bold">{{ 0 }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Players On Field -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Striker Card -->
+                    <div class="bg-brand-accent p-6 rounded-3xl border-2 transition-all relative"
+                        [class.border-brand-red]="true">
+                        <div class="absolute top-4 right-4 text-brand-red">
+                            <span class="text-[10px] font-black uppercase tracking-tighter italic">STRIKER</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 rounded-2xl bg-brand-dark flex items-center justify-center font-black text-brand-red">
+                                {{ striker()?.displayName?.[0] }}
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-bold text-lg">{{ striker()?.displayName }}</p>
+                                <div class="flex gap-4 text-xs text-brand-white/50">
+                                    <span>R: <strong>{{ getPlayerStats(inningsState()?.strikerId || '').runs
+                                            }}</strong></span>
+                                    <span>B: <strong>{{ getPlayerStats(inningsState()?.strikerId || '').balls
+                                            }}</strong></span>
+                                    <span>4s/6s: <strong>{{ getPlayerStats(inningsState()?.strikerId || '').fours }}/{{
+                                            getPlayerStats(inningsState()?.strikerId || '').sixes }}</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Non-Striker Card -->
+                    <div class="bg-brand-accent/50 p-6 rounded-3xl border border-brand-white/5 relative">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 rounded-2xl bg-brand-dark flex items-center justify-center font-black text-brand-white/20">
+                                {{ nonStriker()?.displayName?.[0] }}
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-bold text-lg">{{ nonStriker()?.displayName }}</p>
+                                <div class="flex gap-4 text-xs text-brand-white/50">
+                                    <span>R: <strong>{{ getPlayerStats(inningsState()?.nonStrikerId || '').runs
+                                            }}</strong></span>
+                                    <span>B: <strong>{{ getPlayerStats(inningsState()?.nonStrikerId || '').balls
+                                            }}</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bowler Card -->
+                <div
+                    class="bg-brand-dark/50 p-6 rounded-3xl border border-brand-red/20 flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-brand-red flex items-center justify-center text-white">
+                            <ion-icon name="shirt-outline"></ion-icon>
+                        </div>
+                        <div>
+                            <p class="text-xs text-brand-white/30 uppercase font-bold">CURRENT BOWLER</p>
+                            <p class="font-bold text-lg">{{ currentBowler()?.displayName }}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="flex gap-6 text-sm">
+                            <div class="flex flex-col">
+                                <span class="text-brand-white/30 text-[10px] font-bold uppercase">OVERS</span>
+                                <span class="font-bold">{{ getBowlerStats(inningsState()?.currentBowlerId || '').overs
+                                    }}</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-brand-white/30 text-[10px] font-bold uppercase">RUNS</span>
+                                <span class="font-bold">{{ getBowlerStats(inningsState()?.currentBowlerId || '').runs
+                                    }}</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-brand-white/30 text-[10px] font-bold uppercase">WKTS</span>
+                                <span class="font-bold text-brand-red">{{ getBowlerStats(inningsState()?.currentBowlerId
+                                    || '').wickets }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scoring Controls -->
+                <div class="bg-brand-accent/20 p-8 rounded-[40px] border border-brand-white/5 space-y-8">
+                    <div class="grid grid-cols-4 md:grid-cols-7 gap-3">
+                        @for (run of [0, 1, 2, 3, 4, 6]; track run) {
+                        <button (click)="recordRuns(run)"
+                            class="aspect-square rounded-2xl bg-brand-accent border border-brand-white/10 flex items-center justify-center text-2xl font-black text-brand-white hover:bg-brand-red hover:border-brand-red transition-all active:scale-95">
+                            {{ run }}
+                        </button>
+                        }
+                        <button (click)="openWicketModal()"
+                            class="aspect-square rounded-2xl bg-brand-red/10 border border-brand-red flex items-center justify-center text-sm font-black text-brand-red hover:bg-brand-red hover:text-white transition-all active:scale-95">
+                            OUT
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        @for (extra of [
+                        { label: 'Wide', type: 'wide' },
+                        { label: 'No Ball', type: 'no-ball' },
+                        { label: 'Leg Bye', type: 'leg-bye' },
+                        { label: 'Bye', type: 'bye' }
+                        ]; track extra.label) {
+                        <button (click)="recordRuns(1, true, $any(extra.type))"
+                            class="h-14 rounded-2xl bg-brand-dark/50 border border-brand-white/5 flex items-center justify-center gap-2 text-xs font-bold text-brand-white/60 hover:text-white hover:border-brand-red transition-all">
+                            +1 {{ extra.label }}
+                        </button>
+                        }
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="flex items-center justify-between pt-6 border-t border-brand-white/5">
+                        <button (click)="undoLastBall()"
+                            class="flex items-center gap-2 text-brand-white/40 hover:text-brand-red font-bold text-sm transition-all">
+                            <ion-icon name="undo-outline" class="text-xl"></ion-icon>
+                            Undo Ball
+                        </button>
+
+                        <button
+                            class="flex items-center gap-2 text-brand-white/40 hover:text-white font-bold text-sm transition-all">
+                            <ion-icon name="refresh-outline" class="text-xl"></ion-icon>
+                            Change Bowler
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Over Log & Stats -->
+            <div class="space-y-6">
+                <section
+                    class="bg-brand-accent/50 p-6 rounded-[40px] border border-brand-white/5 flex flex-col h-full min-h-[500px]">
+                    <h2 class="text-lg font-bold mb-6 flex items-center gap-2">
+                        <ion-icon name="time-outline" class="text-brand-red"></ion-icon>
+                        Recent Balls
+                    </h2>
+
+                    <div class="flex-1 space-y-3 overflow-y-auto pr-2">
+                        @for (ball of liveMatchService.matchEvents().slice().reverse(); track ball.id) {
+                        <div
+                            class="flex items-center gap-4 p-4 rounded-2xl bg-brand-dark/50 border border-brand-white/5">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-brand-accent flex items-center justify-center text-xs font-black text-brand-red">
+                                {{ ball.over }}.{{ ball.ball }}
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-bold text-sm">
+                                    @if (ball.wicket) {
+                                    <span class="text-brand-red uppercase">WICKET ({{ ball.wicket.type }})</span>
+                                    } @else if (ball.extras.type !== 'none') {
+                                    <span class="text-brand-accent uppercase">{{ ball.extras.type }}</span>
+                                    } @else {
+                                    {{ ball.runs }} Runs
+                                    }
+                                </p>
+                                <p class="text-[10px] text-brand-white/30 uppercase">Bowled by {{
+                                    playerService.getPlayerById(ball.bowlerId)?.displayName }}</p>
+                            </div>
+                        </div>
+                        } @empty {
+                        <div class="h-40 flex flex-col items-center justify-center text-center opacity-30">
+                            <ion-icon name="alert-circle-outline" class="text-4xl mb-2"></ion-icon>
+                            <p class="text-sm">No balls bowled yet</p>
+                        </div>
+                        }
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wicket Modal -->
+    <ion-modal [isOpen]="showWicketModal()" (didDismiss)="showWicketModal.set(false)" class="auto-height">
+        <ng-template>
+            <div class="bg-brand-dark p-8 space-y-8 h-full">
+                <h2 class="text-3xl font-black text-brand-white uppercase italic">HOW WAS THAT?</h2>
+
+                <div class="space-y-4">
+                    <label class="text-xs font-black uppercase text-brand-white/50 tracking-widest pl-1">Wicket
+                        Type</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        @for (type of ['bowled', 'caught', 'lbw', 'run-out', 'stumped', 'others']; track type) {
+                        <button (click)="wicketData.type = $any(type)"
+                            [class]="wicketData.type === type ? 'bg-brand-red border-brand-red text-white' : 'bg-brand-accent border-brand-white/10 text-brand-white/50'"
+                            class="h-14 rounded-2xl border font-black transition-all uppercase text-xs">
+                            {{ type }}
+                        </button>
+                        }
+                    </div>
+                </div>
+
+                <button (click)="confirmWicket()"
+                    class="w-full bg-brand-red text-white h-16 rounded-[20px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-brand-red/30">
+                    Confirm Wicket
+                </button>
+            </div>
+        </ng-template>
+    </ion-modal>
+
+    <!-- Next Batsman Modal -->
+    <ion-modal [isOpen]="showNextBatsmanModal()" [backdropDismiss]="false" class="auto-height">
+        <ng-template>
+            <div class="bg-brand-dark p-8 space-y-8 h-full">
+                <h2 class="text-3xl font-black text-brand-white uppercase italic">INCOMING BATSMAN</h2>
+
+                <div class="space-y-4">
+                    <label class="text-xs font-black uppercase text-brand-white/50 tracking-widest pl-1">Select Next
+                        Player</label>
+                    <div class="grid grid-cols-1 gap-2 max-h-[400px] overflow-y-auto pr-2">
+                        @for (p of getBattingTeamPlayers(); track p.id) {
+                        <button (click)="nextBatsmanId.set(p.id)"
+                            [class]="nextBatsmanId() === p.id ? 'bg-brand-red border-brand-red text-white' : 'bg-brand-accent border-brand-white/10 text-brand-white/50'"
+                            class="h-16 px-6 rounded-2xl border font-bold transition-all flex items-center justify-between">
+                            <span>{{ p.fullName }}</span>
+                            <span class="text-[10px] opacity-50 uppercase">{{ p.role }}</span>
+                        </button>
+                        }
+                    </div>
+                </div>
+
+                <button (click)="selectNextBatsman()" [disabled]="!nextBatsmanId()"
+                    class="w-full bg-brand-red text-white h-16 rounded-[20px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-brand-red/30 disabled:opacity-30">
+                    Ready to Bat
+                </button>
+            </div>
+        </ng-template>
+    </ion-modal>
+
+    <!-- End Innings Modal -->
+    <ion-modal [isOpen]="showEndInningsModal()" [backdropDismiss]="false" class="auto-height">
+        <ng-template>
+            <div class="bg-brand-dark p-12 text-center space-y-8 h-full">
+                <div
+                    class="w-24 h-24 bg-brand-red/10 rounded-[35px] flex items-center justify-center text-brand-red text-5xl mx-auto">
+                    🏁
+                </div>
+                <div>
+                    <h2 class="text-4xl font-black text-brand-white uppercase">INNINGS COMPLETED</h2>
+                    <p class="text-brand-white/40 mt-2">The session has ended. Prepare for the results or next stage.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 p-8 bg-brand-accent/30 rounded-[40px] border border-brand-white/5">
+                    <div>
+                        <p class="text-[10px] font-black text-brand-white/30 uppercase tracking-widest">FINAL SCORE</p>
+                        <p class="text-4xl font-black text-brand-white">{{ inningsState()?.runs }}/{{
+                            inningsState()?.wickets }}</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-brand-white/30 uppercase tracking-widest">OVERS</p>
+                        <p class="text-4xl font-black text-brand-red">{{
+                            liveMatchService.getBallsFormatted(inningsState()?.balls || 0) }}</p>
+                    </div>
+                </div>
+
+                <button (click)="proceedToNextInnings()"
+                    class="w-full bg-brand-white text-brand-dark h-16 rounded-[25px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl">
+                    View Match Result
+                </button>
+            </div>
+        </ng-template>
+    </ion-modal>
+
+</ion-content>

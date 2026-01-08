@@ -1,0 +1,402 @@
+CRICKET MATCH MANAGEMENT APPLICATION
+
+UI/UX & FUNCTIONAL SPECIFICATION
+(Ionic Angular Standalone + Tailwind CSS)
+
+1. PROJECT OVERVIEW
+
+The application is a professional cricket match management system designed for organizing, scoring, and tracking cricket matches and tournaments. It supports persistent storage of players, teams, matches, and tournaments, enabling data reuse across multiple events.
+
+The primary goals are:
+
+High usability with minimal cognitive load
+
+Clear separation of concerns (Players, Teams, Matches, Tournaments)
+
+Professional presentation suitable for official cricket organizations
+
+Accurate, structured live scoring and match tracking
+
+2. TECHNOLOGY & STRUCTURE REQUIREMENTS
+Framework & Architecture
+
+Ionic Angular using standalone components
+
+Tailwind CSS for styling
+
+Modular feature-based folder structure
+
+Strict separation between UI components, services, and data models
+
+Data Persistence
+
+Local persistent database (IndexedDB or SQLite abstraction)
+
+Centralized data access layer
+
+All entities must be reusable across the application
+
+Core Data Entities
+
+Player
+
+Team
+
+Match
+
+Tournament
+
+MatchEvent (ball-by-ball data)
+
+3. GLOBAL LAYOUT & RESPONSIVE BEHAVIOR
+Header (All Screen Sizes)
+
+Application name and logo
+
+Current section title
+
+Contextual indicators (e.g., live match in progress)
+
+Access to settings
+
+Navigation
+
+Mobile and Tablet
+
+Bottom navigation bar with primary sections:
+
+Dashboard
+
+Live Matches
+
+Players
+
+Teams
+
+More (Tournaments, History)
+
+Desktop and Wide Screens
+
+Persistent left sidebar replacing the footer
+
+Sidebar items:
+
+Dashboard
+
+Live Matches
+
+Players
+
+Teams
+
+Tournaments
+
+Match History
+
+Settings
+
+Navigation must be consistent and visible at all times.
+
+4. DASHBOARD / HOME SCREEN
+
+The dashboard is the primary overview and must present actionable information immediately.
+
+Live Matches Section (Highest Priority)
+
+Display currently running matches
+
+Each match card includes:
+
+Team A vs Team B
+
+Current score (runs/wickets)
+
+Overs
+
+Batting team indicator
+
+Cards must update dynamically
+
+Selecting a card opens the live match scoring view
+
+Upcoming Matches
+
+Scheduled matches with date, time, teams, and venue
+
+Quick Actions
+
+Start New Match
+
+Add Player
+
+Create Team
+
+Create Tournament
+
+5. PLAYER MANAGEMENT
+Player Creation
+Required Fields
+
+Full Name
+
+Display Name (short name for scorecards)
+
+Optional Fields (Collapsible Advanced Section)
+
+Profile photo (fallback to initials avatar)
+
+Player role (Batsman, Bowler, All-rounder, Wicketkeeper)
+
+Batting style (Right-handed / Left-handed)
+
+Bowling style (Fast, Medium, Spin)
+
+Jersey number
+
+Date of birth
+
+Notes (injuries, remarks)
+
+Player List View
+
+Search and filter by role
+
+Avatar, name, and role summary
+
+Persistent storage for reuse
+
+Player Profile View
+
+Player details
+
+Aggregated career statistics
+
+Matches played
+
+Teams associated with the player
+
+6. TEAM MANAGEMENT
+Team Creation
+
+Team name
+
+Team short code
+
+Team logo (optional)
+
+Home ground (optional)
+
+Squad Management
+
+Select players from existing player database
+
+Ability to add new players inline
+
+Assign leadership roles:
+
+Captain
+
+Vice-captain
+
+Wicketkeeper
+
+Team Detail Screen
+
+Squad list
+
+Team statistics
+
+Past matches
+
+Performance summary
+
+7. MATCH CREATION FLOW
+
+Match creation must be implemented as a guided, step-based process.
+
+Step 1: Match Configuration
+
+Match name
+
+Match format (Friendly, League, Knockout)
+
+Overs configuration:
+
+Fixed overs
+
+Unlimited overs
+
+Step 2: Team Selection
+
+Select two teams from saved teams
+
+Option to create a new team inline
+
+Step 3: Playing XI Selection
+
+Select playing players from team squad
+
+Validation rules:
+
+Maximum players enforced
+
+At least one wicketkeeper
+
+Optional substitutes selection
+
+Step 4: Match Metadata (Optional)
+
+Venue
+
+Umpire(s)
+
+Scorer
+
+8. TOSS MANAGEMENT
+
+Toss screen must appear before match start
+
+Simulated coin toss animation
+
+Toss winner selection
+
+Choice between batting or bowling
+
+Automatic assignment of:
+
+Batting team
+
+Bowling team
+
+Opening batsmen
+
+Opening bowler
+
+9. LIVE MATCH SCORING SYSTEM
+Scoring Controls
+
+Ball-by-ball scoring interface
+
+Run options: 0, 1, 2, 3, 4, 6
+
+Extras:
+
+No ball
+
+Wide
+
+Bye
+
+Leg bye
+
+Wicket Handling
+
+Wicket type selection
+
+Player dismissed
+
+Incoming batsman selection
+
+Over & Ball Management
+
+Ball counter and over progression
+
+Undo last ball functionality
+
+Over summary display
+
+Live Scoreboard
+
+Team score
+
+Overs completed
+
+Current run rate
+
+Batting player statistics
+
+Bowler statistics
+
+10. TOURNAMENT MANAGEMENT
+Tournament Creation
+
+Tournament name
+
+Tournament format:
+
+League
+
+Knockout
+
+Team selection
+
+Points configuration
+
+Tournament Dashboard
+
+Points table
+
+Match fixtures
+
+Completed match results
+
+Top performers
+
+11. MATCH HISTORY & ANALYTICS
+Match History
+
+List of completed matches
+
+Filters by date, team, and tournament
+
+Match Summary
+
+Full scorecard
+
+Player performances
+
+Result and match highlights
+
+12. SETTINGS & ADMIN FEATURES
+
+Theme configuration (dark mode default)
+
+Data export (JSON format)
+
+Reset demo data
+
+Application information
+
+13. USER EXPERIENCE PRINCIPLES
+
+Progressive disclosure of advanced options
+
+Clear labeling and hierarchy
+
+No more than one primary action per screen
+
+Consistent terminology across all sections
+
+Zero ambiguity in match state transitions
+
+14. ADDITIONAL PROFESSIONAL FEATURES
+
+Auto-save on every scoring action
+
+Resume match prompt on dashboard
+
+Confirmation before ending or abandoning a match
+
+Visual indicators for striker, non-striker, and current bowler
+
+Audit-friendly ball-by-ball log
+
+15. QUALITY EXPECTATIONS
+
+No placeholder UI
+
+No experimental or playful design elements
+
+All screens must function logically even with partial data
+
+UI must remain usable on low-resolution devices

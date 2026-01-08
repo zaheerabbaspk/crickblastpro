@@ -1,0 +1,117 @@
+<ion-content>
+    <div class="max-w-3xl mx-auto space-y-8">
+        <!-- Header -->
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a [routerLink]="['/players']"
+                    class="w-12 h-12 flex items-center justify-center rounded-2xl bg-brand-accent text-brand-white hover:bg-brand-accent/80 transition-all">
+                    <ion-icon name="arrow-back-outline" class="text-2xl"></ion-icon>
+                </a>
+                <div>
+                    <h1 class="text-2xl font-bold">Add New Player</h1>
+                    <p class="text-brand-white/50 text-sm">Create a new player profile</p>
+                </div>
+            </div>
+
+            <button (click)="savePlayer()"
+                class="bg-brand-red text-white h-12 px-8 rounded-2xl flex items-center gap-2 font-bold hover:bg-brand-red/90 transition-all shadow-lg shadow-brand-red/20">
+                <ion-icon name="save-outline" class="text-xl"></ion-icon>
+                <span>Save Player</span>
+            </button>
+        </div>
+
+        <!-- Form Sections -->
+        <div class="space-y-6">
+            <!-- Basic Info -->
+            <section class="bg-brand-accent/50 p-6 lg:p-8 rounded-[40px] border border-brand-white/5 space-y-6">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-xl bg-brand-red/10 flex items-center justify-center text-brand-red">
+                        <ion-icon name="person-outline" class="text-xl"></ion-icon>
+                    </div>
+                    <h2 class="text-lg font-bold">Personal Information</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <app-input label="Full Name" placeholder="e.g. Virat Kohli" [(value)]="playerData.fullName"
+                        icon="person-outline"></app-input>
+
+                    <app-input label="Display Name" placeholder="e.g. VK"
+                        [(value)]="playerData.displayName"></app-input>
+
+                    <app-input label="Jersey Number (Optional)" placeholder="e.g. 18"
+                        [(value)]="playerData.jerseyNumber" type="number"></app-input>
+                </div>
+            </section>
+
+            <!-- Player Specs -->
+            <section class="bg-brand-accent/50 p-6 lg:p-8 rounded-[40px] border border-brand-white/5 space-y-6">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-xl bg-brand-red/10 flex items-center justify-center text-brand-red">
+                        <ion-icon name="star-outline" class="text-xl"></ion-icon>
+                    </div>
+                    <h2 class="text-lg font-bold">Player Specialization</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Role Selection -->
+                    <div class="space-y-3">
+                        <label class="text-sm font-medium text-brand-white/70 px-1 text-red">Player Role</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            @for (role of roles; track role) {
+                            <button (click)="playerData.role = role"
+                                class="h-14 rounded-2xl border text-sm font-medium transition-all"
+                                [class.bg-brand-red]="playerData.role === role"
+                                [class.text-white]="playerData.role === role"
+                                [class.border-brand-red]="playerData.role === role"
+                                [class.bg-brand-dark]="playerData.role !== role"
+                                [class.text-brand-white/50]="playerData.role !== role"
+                                [class.border-brand-white/10]="playerData.role !== role">
+                                {{ role }}
+                            </button>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Batting Style -->
+                    <div class="space-y-3">
+                        <label class="text-sm font-medium text-brand-white/70 px-1">Batting Style</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            @for (style of battingStyles; track style) {
+                            <button (click)="playerData.battingStyle = style"
+                                class="h-14 rounded-2xl border text-sm font-medium transition-all"
+                                [class.bg-brand-red]="playerData.battingStyle === style"
+                                [class.text-white]="playerData.battingStyle === style"
+                                [class.border-brand-red]="playerData.battingStyle === style"
+                                [class.bg-brand-dark]="playerData.battingStyle !== style"
+                                [class.text-brand-white/50]="playerData.battingStyle !== style"
+                                [class.border-brand-white/10]="playerData.battingStyle !== style">
+                                {{ style }}
+                            </button>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Bowling Style -->
+                    <div class="space-y-3 md:col-span-2">
+                        <label class="text-sm font-medium text-brand-white/70 px-1">Bowling Style</label>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                            @for (style of bowlingStyles; track style) {
+                            <button (click)="playerData.bowlingStyle = style"
+                                class="h-14 rounded-2xl border text-sm font-medium transition-all"
+                                [class.bg-brand-red]="playerData.bowlingStyle === style"
+                                [class.text-white]="playerData.bowlingStyle === style"
+                                [class.border-brand-red]="playerData.bowlingStyle === style"
+                                [class.bg-brand-dark]="playerData.bowlingStyle !== style"
+                                [class.text-brand-white/50]="playerData.bowlingStyle !== style"
+                                [class.border-brand-white/10]="playerData.bowlingStyle !== style">
+                                {{ style }}
+                            </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </div>
+</ion-content>

@@ -1,0 +1,144 @@
+<ion-content>
+    <div class="max-w-4xl mx-auto space-y-8 pb-20">
+        <!-- Header -->
+        <div class="flex items-center gap-4">
+            <button (click)="location.back()"
+                class="w-12 h-12 flex items-center justify-center rounded-2xl bg-brand-accent text-brand-white hover:bg-brand-accent/80 transition-all">
+                <ion-icon name="arrow-back-outline" class="text-2xl"></ion-icon>
+            </button>
+            <div>
+                <h1 class="text-2xl font-bold">The Toss</h1>
+                <p class="text-brand-white/50 text-sm">{{ match()?.name }}</p>
+            </div>
+        </div>
+
+        @if (match()) {
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            <!-- Toss Simulator -->
+            <div
+                class="bg-brand-accent/30 p-8 rounded-[40px] border border-brand-white/5 flex flex-col items-center justify-center space-y-8 min-h-[400px]">
+                <h2 class="text-xl font-bold text-brand-white/70">Coin Toss</h2>
+
+                <div class="coin" [style.--flip-to.deg]="flipRotation()" [class.flipping]="isFlipping()">
+                    <div class="coin-face heads">HEADS</div>
+                    <div class="coin-face tails">TAILS</div>
+                </div>
+
+                <div class="pt-4 flex flex-col items-center gap-4">
+                    @if (!tossResult() && !isFlipping()) {
+                    <button (click)="flipCoin()"
+                        class="bg-brand-red text-white h-14 px-10 rounded-2xl font-black flex items-center gap-2 hover:scale-105 transition-all shadow-xl shadow-brand-red/20">
+                        <ion-icon name="sync-outline"></ion-icon>
+                        Flip Coin
+                    </button>
+                    } @else if (isFlipping()) {
+                    <p class="text-brand-red font-black animate-pulse uppercase tracking-[0.2em]">Flipping...</p>
+                    } @else {
+                    <div class="text-center animate-bounce">
+                        <p class="text-brand-white/50 text-sm uppercase">Result</p>
+                        <p class="text-4xl font-black text-brand-red uppercase">{{ tossResult() }}</p>
+                    </div>
+                    <button (click)="tossResult.set(null)"
+                        class="text-white/30 hover:text-white text-sm font-bold">Reset Toss</button>
+                    }
+                </div>
+            </div>
+
+            <!-- Decision -->
+            <div class="bg-brand-accent/30 p-8 rounded-[40px] border border-brand-white/5 space-y-8">
+                <div class="space-y-6">
+                    <label class="text-sm font-medium text-brand-white/70">Who won the toss?</label>
+                    <div class="grid grid-cols-1 gap-3">
+                        @for (team of [teamA(), teamB()]; track team?.id) {
+                        <button (click)="tossWinnerId.set(team?.id || null)"
+                            [class]="tossWinnerId() === team?.id ? 'bg-brand-red border-brand-red text-white' : 'bg-brand-dark border-brand-white/10 text-brand-white/50'"
+                            class="h-16 rounded-2xl border font-bold transition-all flex items-center justify-center gap-3">
+                            <ion-icon name="shirt-outline"></ion-icon>
+                            {{ team?.name }}
+                        </button>
+                        }
+                    </div>
+                </div>
+
+                @if (tossWinnerId()) {
+                <div class="space-y-6 animate-in fade-in slide-in-from-top-4">
+                    <label class="text-sm font-medium text-brand-white/70">Decision</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        @for (d of ['bat', 'bowl']; track d) {
+                        <button (click)="decision.set($any(d))"
+                            [class]="decision() === d ? 'bg-brand-red border-brand-red text-white' : 'bg-brand-dark border-brand-white/10 text-brand-white/50'"
+                            class="h-16 rounded-2xl border font-bold transition-all uppercase">
+                            {{ d }}
+                        </button>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+
+            <!-- Opener Selection -->
+            @if (tossWinnerId() && decision()) {
+            <div
+                class="md:col-span-2 bg-brand-accent/30 p-8 md:p-12 rounded-[50px] border border-brand-white/5 space-y-8 animate-in zoom-in-95">
+                <h2 class="text-2xl font-bold flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-brand-red flex items-center justify-center text-white text-xl">
+                        <ion-icon name="shirt-outline"></ion-icon>
+                    </div>
+                    Select Openers
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="space-y-3">
+                        <label class="text-sm font-medium text-brand-white/70">Striker (Batting)</label>
+                        <select [(ngModel)]="strikerId"
+                            class="w-full h-14 bg-brand-dark border border-brand-white/10 rounded-2xl px-4 text-brand-white">
+                            <option value="">Select Striker</option>
+                            @for (p of getTeamPlayers(decision() === 'bat' ? tossWinnerId()! : (tossWinnerId() ===
+                            match()?.teamAId ? match()?.teamBId! : match()?.teamAId!)); track p.id) {
+                            <option [value]="p.id">{{ p.displayName }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="space-y-3">
+                        <label class="text-sm font-medium text-brand-white/70">Non-Striker (Batting)</label>
+                        <select [(ngModel)]="nonStrikerId"
+                            class="w-full h-14 bg-brand-dark border border-brand-white/10 rounded-2xl px-4 text-brand-white">
+                            <option value="">Select Non-Striker</option>
+                            @for (p of getTeamPlayers(decision() === 'bat' ? tossWinnerId()! : (tossWinnerId() ===
+                            match()?.teamAId ? match()?.teamBId! : match()?.teamAId!)); track p.id) {
+                            @if (p.id !== strikerId()) {
+                            <option [value]="p.id">{{ p.displayName }}</option>
+                            }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="space-y-3">
+                        <label class="text-sm font-medium text-brand-white/70">Opening Bowler</label>
+                        <select [(ngModel)]="bowlerId"
+                            class="w-full h-14 bg-brand-dark border border-brand-white/10 rounded-2xl px-4 text-brand-white">
+                            <option value="">Select Bowler</option>
+                            @for (p of getTeamPlayers(decision() === 'bowl' ? tossWinnerId()! : (tossWinnerId() ===
+                            match()?.teamAId ? match()?.teamBId! : match()?.teamAId!)); track p.id) {
+                            <option [value]="p.id">{{ p.displayName }}</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="pt-8 flex justify-center">
+                    <button (click)="startMatch()" [disabled]="!strikerId() || !nonStrikerId() || !bowlerId()"
+                        class="bg-brand-red text-white h-16 px-16 rounded-[25px] font-black flex items-center gap-3 hover:scale-105 transition-all shadow-2xl shadow-brand-red/40 disabled:opacity-30 disabled:hover:scale-100">
+                        <span>COMMENCE MATCH</span>
+                        <ion-icon name="checkmark-circle-outline" class="text-2xl"></ion-icon>
+                    </button>
+                </div>
+            </div>
+            }
+
+        </div>
+        }
+    </div>
+</ion-content>

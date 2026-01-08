@@ -1,0 +1,119 @@
+<ion-content>
+    <div class="space-y-8 pb-10">
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-brand-accent p-6 rounded-[40px] border border-brand-white/5 relative overflow-hidden group">
+                <div
+                    class="absolute -right-4 -top-4 w-24 h-24 bg-brand-red/10 rounded-full blur-3xl group-hover:bg-brand-red/20 transition-all">
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-brand-red/10 flex items-center justify-center text-brand-red">
+                        <ion-icon name="trending-up-outline" class="text-2xl"></ion-icon>
+                    </div>
+                    <div>
+                        <p class="text-brand-white/50 text-xs font-bold uppercase tracking-widest">Total Matches</p>
+                        <p class="text-2xl font-black">24</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- More stats can go here -->
+        </div>
+
+        <!-- Quick Actions -->
+        <section>
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold">Quick Actions</h2>
+            </div>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                @for (action of quickActions; track action.title) {
+                <a [routerLink]="[action.url]"
+                    class="bg-brand-accent p-6 rounded-[32px] border border-brand-white/5 hover:border-brand-red/30 transition-all group">
+                    <div
+                        [class]="action.color + ' w-12 h-12 rounded-2xl flex items-center justify-center text-white mb-4 shadow-lg shadow-black/20 group-hover:scale-110 transition-transform'">
+                        <ion-icon [name]="action.icon" class="text-2xl"></ion-icon>
+                    </div>
+                    <h3 class="font-bold text-base">{{ action.title }}</h3>
+                    <p class="text-brand-white/40 text-xs">{{ action.subtitle }}</p>
+                </a>
+                }
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Live Matches Section -->
+            <section>
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-3 w-3 relative">
+                            <span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-red opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-brand-red"></span>
+                        </div>
+                        <h2 class="text-xl font-bold">Live Matches</h2>
+                    </div>
+                    <button class="text-brand-red text-sm font-bold flex items-center gap-1 hover:underline">
+                        View All <ion-icon name="chevron-forward-outline"></ion-icon>
+                    </button>
+                </div>
+
+                <div class="space-y-4">
+                    @for (match of liveMatches(); track match.id) {
+                    <a [routerLink]="['/match', match.id, 'scoring']"
+                        class="block bg-brand-accent p-6 rounded-[32px] border border-brand-white/5 hover:border-brand-red/30 transition-all group">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-[10px] font-black text-brand-red uppercase tracking-widest">LIVE
+                                NOW</span>
+                            <span class="text-[10px] text-brand-white/30 uppercase font-black">{{ match.format }}</span>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">{{ match.name }}</h3>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-8 h-8 rounded-lg bg-brand-dark flex items-center justify-center text-xs font-black">
+                                    A</div>
+                                <span class="text-sm font-bold">vs</span>
+                                <div
+                                    class="w-8 h-8 rounded-lg bg-brand-dark flex items-center justify-center text-xs font-black">
+                                    B</div>
+                            </div>
+                            <button
+                                class="bg-brand-red/10 text-brand-red px-4 py-2 rounded-xl text-xs font-black group-hover:bg-brand-red group-hover:text-white transition-all">
+                                RESUME
+                            </button>
+                        </div>
+                    </a>
+                    } @empty {
+                    <!-- Placeholder/No Matches State -->
+                    <div
+                        class="bg-brand-accent/30 p-10 rounded-[40px] border border-dashed border-brand-white/10 flex flex-col items-center justify-center text-center">
+                        <div
+                            class="w-16 h-16 rounded-full bg-brand-dark flex items-center justify-center text-3xl mb-4 grayscale opacity-50">
+                            🏏
+                        </div>
+                        <h3 class="font-bold text-brand-white/70">No Live Matches</h3>
+                        <p class="text-brand-white/30 text-sm mt-1 max-w-[200px]">Start a match to see live scoring
+                            action here.</p>
+                    </div>
+                    }
+                </div>
+            </section>
+
+            <!-- Upcoming Matches -->
+            <section>
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold">Upcoming</h2>
+                    <button class="text-brand-white/50 text-sm font-bold hover:text-white">Calendar</button>
+                </div>
+
+                <div
+                    class="bg-brand-accent rounded-[40px] border border-brand-white/5 divide-y divide-brand-white/5 overflow-hidden">
+                    <div class="p-10 flex flex-col items-center justify-center text-center grayscale opacity-50">
+                        <ion-icon name="calendar-outline" class="text-4xl mb-4"></ion-icon>
+                        <p class="text-sm font-bold">Your schedule is empty</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</ion-content>

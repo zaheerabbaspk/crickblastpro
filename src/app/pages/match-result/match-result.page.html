@@ -1,0 +1,79 @@
+<ion-content>
+    <div class="max-w-4xl mx-auto space-y-8 pb-20 px-4">
+
+        <!-- Hero Result Section -->
+        <div
+            class="bg-brand-red rounded-[50px] p-12 text-center text-white relative overflow-hidden shadow-2xl shadow-brand-red/40">
+            <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none p-12">
+                <ion-icon name="trophy-outline" class="text-[300px]"></ion-icon>
+            </div>
+
+            <div class="relative z-10 space-y-4">
+                <ion-icon name="trophy-outline" class="text-6xl mb-4"></ion-icon>
+                <h1 class="text-sm font-black uppercase tracking-[0.4em] opacity-70">MATCH COMPLETED</h1>
+                <p class="text-5xl font-black italic">{{ winner()?.name }} WON!</p>
+                <p class="text-xl font-medium opacity-80">By {{ inningsState()?.runs }} runs</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Summary Card -->
+            <div class="bg-brand-accent/30 rounded-[40px] border border-brand-white/5 p-8 space-y-6">
+                <h2 class="text-xl font-bold border-b border-brand-white/10 pb-4">Match Summary</h2>
+
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center p-4 rounded-2xl bg-brand-dark/50">
+                        <span class="text-brand-white/40 font-bold text-xs uppercase">Total Runs</span>
+                        <span class="text-2xl font-black">{{ inningsState()?.runs }}</span>
+                    </div>
+                    <div class="flex justify-between items-center p-4 rounded-2xl bg-brand-dark/50">
+                        <span class="text-brand-white/40 font-bold text-xs uppercase">Wickets</span>
+                        <span class="text-2xl font-black text-brand-red">{{ inningsState()?.wickets }}</span>
+                    </div>
+                    <div class="flex justify-between items-center p-4 rounded-2xl bg-brand-dark/50">
+                        <span class="text-brand-white/40 font-bold text-xs uppercase">Overs Played</span>
+                        <span class="text-2xl font-black">{{ liveMatchService.getBallsFormatted(inningsState()?.balls ||
+                            0) }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Man of the Match -->
+            <div class="bg-brand-accent/30 rounded-[40px] border border-brand-white/5 p-8 space-y-6">
+                <h2 class="text-xl font-bold border-b border-brand-white/10 pb-4">Man of the Match</h2>
+
+                <div class="space-y-4">
+                    <label class="text-xs font-black uppercase text-brand-white/30 tracking-widest pl-1">Select
+                        Performer</label>
+                    <select [(ngModel)]="manOfTheMatchId"
+                        class="w-full h-16 bg-brand-dark border border-brand-white/10 rounded-2xl px-4 text-brand-white font-bold">
+                        <option value="">Choose Player</option>
+                        @for (p of getPlayers(); track p.id) {
+                        <option [value]="p.id">{{ p.fullName }}</option>
+                        }
+                    </select>
+
+                    <div
+                        class="h-20 flex items-center justify-center border-2 border-dashed border-brand-white/10 rounded-2xl opacity-30 italic text-sm">
+                        Player stats summary will appear here
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final Actions -->
+        <div class="flex flex-col md:flex-row gap-4 pt-8">
+            <button (click)="finalizeMatch()"
+                class="flex-1 bg-brand-white text-brand-dark h-20 rounded-[30px] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:scale-105 transition-all">
+                <ion-icon name="checkmark-circle-outline" class="text-2xl"></ion-icon>
+                FINALIZE & SAVE
+            </button>
+
+            <button
+                class="w-full md:w-20 bg-brand-accent h-20 rounded-[30px] flex items-center justify-center text-brand-white hover:bg-brand-accent/80 transition-all">
+                <ion-icon name="share-social-outline" class="text-2xl"></ion-icon>
+            </button>
+        </div>
+
+    </div>
+</ion-content>

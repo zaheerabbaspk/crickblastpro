@@ -1,3 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+html,
+body {
+    @apply bg-brand-dark text-brand-white font-sans;
+}
+
+ion-content {
+    --background: theme('colors.brand.dark');
+    --color: theme('colors.brand.white');
+    --padding-top: 1rem;
+    --padding-bottom: 1rem;
+    --padding-start: 1rem;
+    --padding-end: 1rem;
+
+    @media (min-width: 1024px) {
+        --padding-top: 2rem;
+        --padding-bottom: 2rem;
+        --padding-start: 2rem;
+        --padding-end: 2rem;
+    }
+}
+
 /*
  * App Global CSS
  * ----------------------------------------------------------------------------
