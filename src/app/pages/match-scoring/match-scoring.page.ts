@@ -57,6 +57,39 @@ export class MatchScoringPage {
     nonStriker = computed(() => this.playerService.getPlayerById(this.inningsState()?.nonStrikerId || ''));
     currentBowler = computed(() => this.playerService.getPlayerById(this.inningsState()?.currentBowlerId || ''));
 
+    currentInningsEvents = computed(() => {
+        const state = this.inningsState();
+        if (!state) return [];
+        return this.liveMatchService.matchEvents()
+            .filter(e => e.innings === state.inningsNum)
+            .slice()
+            .reverse();
+    });
+
+    // In-match calculations
+    target = computed(() => {
+        const state = this.inningsState();
+        if (state?.inningsNum === 2 && state.firstInningsScore !== undefined) {
+            return state.firstInningsScore + 1;
+        }
+        return undefined;
+    });
+
+    runsNeeded = computed(() => {
+        const state = this.inningsState();
+        const t = this.target();
+        if (state && t !== undefined) {
+            return Math.max(0, t - state.runs);
+        }
+        return undefined;
+    });
+
+    // Second innings setup state
+    showInningsSetupModal = signal(false);
+    newStrikerId = signal('');
+    newNonStrikerId = signal('');
+    newBowlerId = signal('');
+
     constructor() {
         addIcons({
             arrowBackOutline, arrowUndoOutline, checkmarkCircleOutline,
@@ -76,7 +109,7 @@ export class MatchScoringPage {
         if (!state) return;
 
         this.liveMatchService.recordBall({
-            innings: 1, // Need to track innings properly later
+            innings: state.inningsNum,
             over: Math.floor(state.balls / 6),
             ball: (state.balls % 6) + 1,
             strikerId: state.strikerId,
@@ -90,7 +123,7 @@ export class MatchScoringPage {
             }
         });
 
-        this.checkInningsEnd();
+        this.checkMatchEnd();
     }
 
     openWicketModal() {
@@ -121,8 +154,8 @@ export class MatchScoringPage {
 
         this.showWicketModal.set(false);
 
-        // Check if match ended or need new batsman
-        if (state.wickets + 1 >= (this.match()?.teamAPlayers.length || 11) - 1) {
+        // Check if innings ended or need new batsman
+        if (state.wickets + 1 >= (this.getBattingTeamPlayersCount() - 1)) {
             this.endInnings();
         } else {
             this.showNextBatsmanModal.set(true);
@@ -142,11 +175,20 @@ export class MatchScoringPage {
         alert('Undo feature coming soon!');
     }
 
-    checkInningsEnd() {
+    checkMatchEnd() {
         const state = this.inningsState();
         const match = this.match();
         if (!state || !match) return;
 
+        // Condition for 2nd innings win
+        if (state.inningsNum === 2 && state.firstInningsScore !== undefined) {
+            if (state.runs > state.firstInningsScore) {
+                this.endInnings();
+                return;
+            }
+        }
+
+        // Overs completed
         if (state.balls >= match.overs * 6) {
             this.endInnings();
         }
@@ -157,28 +199,74 @@ export class MatchScoringPage {
     }
 
     proceedToNextInnings() {
-        // Logic for 2nd innings or Match Result
-        const match = this.match();
-        if (match) {
-            this.router.navigate(['/match', match.id, 'result']);
+        const state = this.inningsState();
+        if (state?.inningsNum === 1) {
+            this.showEndInningsModal.set(false);
+            this.showInningsSetupModal.set(true);
+        } else {
+            const match = this.match();
+            if (match) {
+                this.router.navigate(['/match', match.id, 'result']);
+            }
         }
+    }
+
+    startSecondInnings() {
+        if (!this.newStrikerId() || !this.newNonStrikerId() || !this.newBowlerId()) {
+            alert('Please select all opening players');
+            return;
+        }
+
+        this.liveMatchService.switchInnings(
+            this.newStrikerId(),
+            this.newNonStrikerId(),
+            this.newBowlerId()
+        );
+
+        this.showInningsSetupModal.set(false);
+        this.newStrikerId.set('');
+        this.newNonStrikerId.set('');
+        this.newBowlerId.set('');
+    }
+
+    getBattingTeamPlayersCount(): number {
+        const state = this.inningsState();
+        const match = this.match();
+        if (!state || !match) return 11;
+
+        return state.battingTeamId === match.teamAId ? match.teamAPlayers.length : match.teamBPlayers.length;
+    }
+
+    getBowlerTeamPlayers(): Player[] {
+        const match = this.match();
+        if (!match) return [];
+        const state = this.inningsState();
+        const teamId = state?.bowlingTeamId || '';
+        const playerIds = teamId === match.teamAId ? match.teamAPlayers : match.teamBPlayers;
+        return playerIds.map(id => this.playerService.getPlayerById(id)!).filter(p => !!p);
     }
 
     getBattingTeamPlayers(): Player[] {
         const state = this.inningsState();
         if (!state) return [];
-
         const match = this.match();
         if (!match) return [];
 
         const playerIds = state.battingTeamId === match.teamAId ? match.teamAPlayers : match.teamBPlayers;
-
-        // Filter out already out players
         const outPlayerIds = state.fallOfWickets.map(f => f.playerId);
+
         return playerIds
             .filter(id => id !== state.strikerId && id !== state.nonStrikerId && !outPlayerIds.includes(id))
             .map(id => this.playerService.getPlayerById(id)!)
             .filter(p => !!p);
+    }
+
+    getPlayersByTeamId(teamId: string): Player[] {
+        const match = this.match();
+        if (!match) return [];
+
+        const playerIds = teamId === match.teamAId ? match.teamAPlayers : match.teamBPlayers;
+        return playerIds.map(id => this.playerService.getPlayerById(id)!).filter(p => !!p);
     }
 
     getPlayerStats(playerId: string) {

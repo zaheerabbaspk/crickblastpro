@@ -32,7 +32,7 @@ export class AppComponent {
     { title: 'Players', url: '/players', icon: 'people' },
     { title: 'Teams', url: '/teams', icon: 'shirt' },
     { title: 'Tournaments', url: '/tournaments', icon: 'trophy' },
-    { title: 'Match History', url: '/history', icon: 'time' },
+    { title: 'Match History', url: '/match-history', icon: 'time' },
     { title: 'Settings', url: '/settings', icon: 'settings' },
   ];
 

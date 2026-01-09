@@ -16,8 +16,10 @@
 
                 <div class="flex items-center gap-8 md:gap-16">
                     <div class="text-center">
-                        <p class="text-brand-white/50 text-[10px] uppercase font-bold mb-1">{{ battingTeam()?.shortName
-                            }} SCORING</p>
+                        <p class="text-brand-white/50 text-[10px] uppercase font-bold mb-1">
+                            {{ battingTeam()?.shortName }} {{ inningsState()?.inningsNum === 2 ? 'CHASING' : 'SCORING'
+                            }}
+                        </p>
                         <div class="flex items-baseline gap-2">
                             <span class="text-6xl font-black text-brand-white">{{ inningsState()?.runs }}</span>
                             <span class="text-4xl font-black text-brand-red">/ {{ inningsState()?.wickets }}</span>
@@ -25,6 +27,17 @@
                         <p class="text-brand-white/70 font-bold mt-1">Overs {{
                             liveMatchService.getBallsFormatted(inningsState()?.balls || 0) }}</p>
                     </div>
+
+                    @if (target()) {
+                    <div class="h-20 w-px bg-brand-white/10"></div>
+                    <div class="text-center">
+                        <p class="text-brand-white/50 text-[10px] uppercase font-bold mb-1">TARGET</p>
+                        <span class="text-4xl font-black text-brand-white">{{ target() }}</span>
+                        <p class="text-[10px] text-brand-red font-bold mt-1">Need {{ runsNeeded() }} from {{
+                            (match()?.overs
+                            || 0) * 6 - (inningsState()?.balls || 0) }} balls</p>
+                    </div>
+                    }
 
                     <div class="hidden lg:block h-20 w-px bg-brand-white/10"></div>
 
@@ -34,11 +47,13 @@
                             <span class="text-xl font-bold">{{ (inningsState()?.runs || 0) / (inningsState()?.balls ||
                                 1) * 6 | number:'1.2-2' }}</span>
                         </div>
+                        @if (target()) {
                         <div class="flex items-center gap-2">
-                            <span
-                                class="text-brand-white/30 text-[10px] font-bold uppercase w-12 text-right">EXTRAS</span>
-                            <span class="text-xl font-bold">{{ 0 }}</span>
+                            <span class="text-brand-white/30 text-[10px] font-bold uppercase w-12 text-right">RRR</span>
+                            <span class="text-xl font-bold text-brand-red">{{ (runsNeeded() || 0) / (((match()?.overs ||
+                                0) * 6 - (inningsState()?.balls || 0)) || 1) * 6 | number:'1.2-2' }}</span>
                         </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -182,7 +197,7 @@
                     </h2>
 
                     <div class="flex-1 space-y-3 overflow-y-auto pr-2">
-                        @for (ball of liveMatchService.matchEvents().slice().reverse(); track ball.id) {
+                        @for (ball of currentInningsEvents(); track ball.id) {
                         <div
                             class="flex items-center gap-4 p-4 rounded-2xl bg-brand-dark/50 border border-brand-white/5">
                             <div
@@ -281,8 +296,11 @@
                     🏁
                 </div>
                 <div>
-                    <h2 class="text-4xl font-black text-brand-white uppercase">INNINGS COMPLETED</h2>
-                    <p class="text-brand-white/40 mt-2">The session has ended. Prepare for the results or next stage.
+                    <h2 class="text-4xl font-black text-brand-white uppercase">{{ inningsState()?.inningsNum === 1 ?
+                        'INNINGS' : 'MATCH' }} COMPLETED</h2>
+                    <p class="text-brand-white/40 mt-2">
+                        {{ inningsState()?.inningsNum === 1 ? 'First innings has ended. Prepare for the chase.' : 'The
+                        match has concluded. Check the final result.' }}
                     </p>
                 </div>
 
@@ -301,7 +319,58 @@
 
                 <button (click)="proceedToNextInnings()"
                     class="w-full bg-brand-white text-brand-dark h-16 rounded-[25px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl">
-                    View Match Result
+                    {{ inningsState()?.inningsNum === 1 ? 'Continue to 2nd Innings' : 'View Match Result' }}
+                </button>
+            </div>
+        </ng-template>
+    </ion-modal>
+
+    <!-- Second Innings Setup Modal -->
+    <ion-modal [isOpen]="showInningsSetupModal()" [backdropDismiss]="false" class="auto-height">
+        <ng-template>
+            <div class="bg-brand-dark p-8 space-y-6 h-full overflow-y-auto">
+                <h2 class="text-3xl font-black text-brand-white uppercase italic">2ND INNINGS SETUP</h2>
+
+                <div class="space-y-4">
+                    <label class="text-xs font-black uppercase text-brand-white/50 tracking-widest pl-1">Striker</label>
+                    <select [ngModel]="newStrikerId()" (ngModelChange)="newStrikerId.set($event)"
+                        class="w-full h-14 bg-brand-accent border border-brand-white/10 rounded-2xl px-4 text-brand-white font-bold">
+                        <option value="">Select Striker</option>
+                        @for (p of getPlayersByTeamId(inningsState()?.bowlingTeamId || ''); track p.id) {
+                        <option [value]="p.id">{{ p.fullName }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="space-y-4">
+                    <label
+                        class="text-xs font-black uppercase text-brand-white/50 tracking-widest pl-1">Non-Striker</label>
+                    <select [ngModel]="newNonStrikerId()" (ngModelChange)="newNonStrikerId.set($event)"
+                        class="w-full h-14 bg-brand-accent border border-brand-white/10 rounded-2xl px-4 text-brand-white font-bold">
+                        <option value="">Select Non-Striker</option>
+                        @for (p of getPlayersByTeamId(inningsState()?.bowlingTeamId || ''); track p.id) {
+                        @if (p.id !== newStrikerId()) {
+                        <option [value]="p.id">{{ p.fullName }}</option>
+                        }
+                        }
+                    </select>
+                </div>
+
+                <div class="space-y-4">
+                    <label class="text-xs font-black uppercase text-brand-white/50 tracking-widest pl-1">Opening
+                        Bowler</label>
+                    <select [ngModel]="newBowlerId()" (ngModelChange)="newBowlerId.set($event)"
+                        class="w-full h-14 bg-brand-accent border border-brand-white/10 rounded-2xl px-4 text-brand-white font-bold">
+                        <option value="">Select Bowler</option>
+                        @for (p of getPlayersByTeamId(inningsState()?.battingTeamId || ''); track p.id) {
+                        <option [value]="p.id">{{ p.fullName }}</option>
+                        }
+                    </select>
+                </div>
+
+                <button (click)="startSecondInnings()"
+                    class="w-full bg-brand-red text-white h-16 rounded-[20px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-brand-red/30">
+                    Start Chase
                 </button>
             </div>
         </ng-template>

@@ -62,6 +62,10 @@ export const routes: Routes = [
     ]
   },
   {
+    path: 'match-history',
+    loadComponent: () => import('./pages/match-history/match-history.page').then(m => m.MatchHistoryPage)
+  },
+  {
     path: 'tournament-create',
     loadComponent: () => import('./pages/tournament-create/tournament-create.page').then(m => m.TournamentCreatePage)
   }

@@ -25,6 +25,7 @@ export interface BallEvent {
 }
 
 export interface InningsState {
+    inningsNum: 1 | 2;
     battingTeamId: string;
     bowlingTeamId: string;
     runs: number;
@@ -35,6 +36,7 @@ export interface InningsState {
     nonStrikerId: string;
     currentBowlerId: string;
     fallOfWickets: { score: number, over: string, playerId: string }[];
+    firstInningsScore?: number;
 }
 
 @Injectable({
@@ -57,6 +59,7 @@ export class LiveMatchService {
     startInnings(matchId: string, battingTeamId: string, bowlingTeamId: string, strikerId: string, nonStrikerId: string, bowlerId: string) {
         this.currentMatchId.set(matchId);
         const newState: InningsState = {
+            inningsNum: 1,
             battingTeamId,
             bowlingTeamId,
             runs: 0,
@@ -73,12 +76,36 @@ export class LiveMatchService {
         this.saveState();
     }
 
+    switchInnings(strikerId: string, nonStrikerId: string, bowlerId: string) {
+        const currentState = this.inningsState();
+        if (!currentState) return;
+
+        const newState: InningsState = {
+            inningsNum: 2,
+            battingTeamId: currentState.bowlingTeamId,
+            bowlingTeamId: currentState.battingTeamId,
+            runs: 0,
+            wickets: 0,
+            balls: 0,
+            currentOverBalls: [],
+            strikerId,
+            nonStrikerId,
+            currentBowlerId: bowlerId,
+            fallOfWickets: [],
+            firstInningsScore: currentState.runs
+        };
+
+        this.inningsState.set(newState);
+        this.saveState();
+    }
+
     recordBall(ball: Omit<BallEvent, 'id' | 'matchId' | 'timestamp'>) {
         const state = this.inningsState();
         if (!state) return;
 
         const event: BallEvent = {
             ...ball,
+            innings: state.inningsNum,
             id: Date.now().toString(),
             matchId: this.currentMatchId()!,
             timestamp: Date.now()

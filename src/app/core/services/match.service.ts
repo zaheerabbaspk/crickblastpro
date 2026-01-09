@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { BallEvent, InningsState } from './live-match.service';
 
 export interface Match {
     id: string;
@@ -20,6 +21,8 @@ export interface Match {
         winnerId?: string;
         margin: string;
         manOfTheMatchId?: string;
+        inningsData?: InningsState[]; // Final state of each innings
+        events?: BallEvent[]; // All balls
     };
     createdAt: number;
 }

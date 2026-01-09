@@ -12,7 +12,7 @@
                 <ion-icon name="trophy-outline" class="text-6xl mb-4"></ion-icon>
                 <h1 class="text-sm font-black uppercase tracking-[0.4em] opacity-70">MATCH COMPLETED</h1>
                 <p class="text-5xl font-black italic">{{ winner()?.name }} WON!</p>
-                <p class="text-xl font-medium opacity-80">By {{ inningsState()?.runs }} runs</p>
+                <p class="text-xl font-medium opacity-80">{{ resultMargin() }}</p>
             </div>
         </div>
 
@@ -22,18 +22,36 @@
                 <h2 class="text-xl font-bold border-b border-brand-white/10 pb-4">Match Summary</h2>
 
                 <div class="space-y-4">
+                    @if (match()?.status === 'completed' ? (match()?.result?.inningsData?.length || 0) > 1 :
+                    inningsState()?.inningsNum === 2) {
+                    <div
+                        class="flex justify-between items-center p-4 rounded-2xl bg-brand-dark/50 border border-brand-white/5">
+                        <span class="text-brand-white/40 font-bold text-xs uppercase text-left">1st Innings</span>
+                        <span class="text-xl font-black text-right">{{ match()?.status === 'completed' ?
+                            match()?.result?.inningsData?.[0]?.runs : inningsState()?.firstInningsScore }} Runs</span>
+                    </div>
+                    }
                     <div class="flex justify-between items-center p-4 rounded-2xl bg-brand-dark/50">
-                        <span class="text-brand-white/40 font-bold text-xs uppercase">Total Runs</span>
-                        <span class="text-2xl font-black">{{ inningsState()?.runs }}</span>
+                        <span class="text-brand-white/40 font-bold text-xs uppercase text-left">{{
+                            (match()?.status === 'completed' ? (match()?.result?.inningsData?.length || 0) > 1 :
+                            inningsState()?.inningsNum === 2) ? '2nd Innings' : 'Total Runs' }}</span>
+                        <span class="text-2xl font-black text-right">{{ match()?.status === 'completed' ?
+                            (match()?.result?.inningsData?.[1] || match()?.result?.inningsData?.[0])?.runs :
+                            inningsState()?.runs }}</span>
                     </div>
                     <div class="flex justify-between items-center p-4 rounded-2xl bg-brand-dark/50">
-                        <span class="text-brand-white/40 font-bold text-xs uppercase">Wickets</span>
-                        <span class="text-2xl font-black text-brand-red">{{ inningsState()?.wickets }}</span>
+                        <span class="text-brand-white/40 font-bold text-xs uppercase text-left">Wickets</span>
+                        <span class="text-2xl font-black text-brand-red text-right">{{ match()?.status === 'completed' ?
+                            (match()?.result?.inningsData?.[1] || match()?.result?.inningsData?.[0])?.wickets :
+                            inningsState()?.wickets }}</span>
                     </div>
                     <div class="flex justify-between items-center p-4 rounded-2xl bg-brand-dark/50">
-                        <span class="text-brand-white/40 font-bold text-xs uppercase">Overs Played</span>
-                        <span class="text-2xl font-black">{{ liveMatchService.getBallsFormatted(inningsState()?.balls ||
-                            0) }}</span>
+                        <span class="text-brand-white/40 font-bold text-xs uppercase text-left">Overs Played</span>
+                        <span class="text-2xl font-black text-right">{{
+                            match()?.status === 'completed' ?
+                            liveMatchService.getBallsFormatted((match()?.result?.inningsData?.[1] ||
+                            match()?.result?.inningsData?.[0])?.balls || 0) :
+                            liveMatchService.getBallsFormatted(inningsState()?.balls || 0) }}</span>
                     </div>
                 </div>
             </div>
@@ -73,6 +91,154 @@
                 class="w-full md:w-20 bg-brand-accent h-20 rounded-[30px] flex items-center justify-center text-brand-white hover:bg-brand-accent/80 transition-all">
                 <ion-icon name="share-social-outline" class="text-2xl"></ion-icon>
             </button>
+        </div>
+
+        <div class="h-12"></div>
+
+        <!-- Detailed Scorecard -->
+        <div class="space-y-6">
+            <h2 class="text-3xl font-black italic uppercase text-brand-white/20 tracking-tighter">MATCH SCORECARD</h2>
+
+            <!-- Innings 1 -->
+            <div class="bg-brand-accent/20 rounded-[40px] border border-brand-white/5 overflow-hidden">
+                <div
+                    class="p-6 md:p-8 bg-brand-white/5 border-b border-brand-white/5 flex justify-between items-center">
+                    <h3 class="text-xl font-bold">{{ teamService.getTeamById(inningsState()?.inningsNum === 1 ?
+                        inningsState()?.battingTeamId || '' : inningsState()?.bowlingTeamId || '')?.name }} - INNINGS 1
+                    </h3>
+                    <span class="text-xl font-black text-brand-red">{{ inningsState()?.inningsNum === 2 ?
+                        inningsState()?.firstInningsScore : inningsState()?.runs }} Runs</span>
+                </div>
+
+                <!-- Batting Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[600px]">
+                        <thead>
+                            <tr class="bg-brand-dark/50 text-[10px] font-black uppercase text-brand-white/30">
+                                <th class="p-4 pl-8">Batsman</th>
+                                <th class="p-4 text-center">R</th>
+                                <th class="p-4 text-center">B</th>
+                                <th class="p-4 text-center">4s</th>
+                                <th class="p-4 text-center">6s</th>
+                                <th class="p-4 text-center pr-8">SR</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-brand-white/5">
+                            @for (s of getBattingStats(inningsState()?.inningsNum === 1 ? inningsState()?.battingTeamId
+                            || '' : inningsState()?.bowlingTeamId || '', 1); track s.name) {
+                            <tr class="text-sm font-medium hover:bg-brand-white/5 transition-colors">
+                                <td class="p-4 pl-8">
+                                    <p class="font-bold">{{ s.name }}</p>
+                                    <p class="text-[10px] text-brand-white/30 italic">{{ s.howOut }}</p>
+                                </td>
+                                <td class="p-4 text-center font-black text-brand-red">{{ s.runs }}</td>
+                                <td class="p-4 text-center text-brand-white/60">{{ s.balls }}</td>
+                                <td class="p-4 text-center text-brand-white/60">{{ s.fours }}</td>
+                                <td class="p-4 text-center text-brand-white/60">{{ s.sixes }}</td>
+                                <td class="p-4 text-center pr-8 text-brand-white/40">{{ s.strikeRate }}</td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Bowling Table -->
+                <div class="overflow-x-auto bg-brand-dark/30">
+                    <table class="w-full text-left border-collapse min-w-[600px]">
+                        <thead>
+                            <tr class="bg-brand-dark/50 text-[10px] font-black uppercase text-brand-white/30">
+                                <th class="p-4 pl-8">Bowler</th>
+                                <th class="p-4 text-center">O</th>
+                                <th class="p-4 text-center">R</th>
+                                <th class="p-4 text-center">W</th>
+                                <th class="p-4 text-center pr-8">Econ</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-brand-white/5">
+                            @for (s of getBowlingStats(inningsState()?.inningsNum === 1 ? inningsState()?.bowlingTeamId
+                            || '' : inningsState()?.battingTeamId || '', 1); track s.name) {
+                            <tr class="text-sm font-medium hover:bg-brand-white/5 transition-colors">
+                                <td class="p-4 pl-8 font-bold">{{ s.name }}</td>
+                                <td class="p-4 text-center font-black text-brand-white">{{ s.overs }}</td>
+                                <td class="p-4 text-center text-brand-white/60">{{ s.runs }}</td>
+                                <td class="p-4 text-center font-black text-brand-red">{{ s.wickets }}</td>
+                                <td class="p-4 text-center pr-8 text-brand-white/40">{{ s.economy }}</td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Innings 2 (Only if played) -->
+            @if (inningsState()?.inningsNum === 2) {
+            <div class="bg-brand-accent/20 rounded-[40px] border border-brand-white/5 overflow-hidden">
+                <div
+                    class="p-6 md:p-8 bg-brand-white/5 border-b border-brand-white/5 flex justify-between items-center">
+                    <h3 class="text-xl font-bold">{{ teamService.getTeamById(inningsState()?.battingTeamId || '')?.name
+                        }}
+                        - INNINGS 2</h3>
+                    <span class="text-xl font-black text-brand-red">{{ inningsState()?.runs }} Runs</span>
+                </div>
+
+                <!-- Batting Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[600px]">
+                        <thead>
+                            <tr class="bg-brand-dark/50 text-[10px] font-black uppercase text-brand-white/30">
+                                <th class="p-4 pl-8">Batsman</th>
+                                <th class="p-4 text-center">R</th>
+                                <th class="p-4 text-center">B</th>
+                                <th class="p-4 text-center">4s</th>
+                                <th class="p-4 text-center">6s</th>
+                                <th class="p-4 text-center pr-8">SR</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-brand-white/5">
+                            @for (s of getBattingStats(inningsState()?.battingTeamId || '', 2); track s.name) {
+                            <tr class="text-sm font-medium hover:bg-brand-white/5 transition-colors">
+                                <td class="p-4 pl-8">
+                                    <p class="font-bold">{{ s.name }}</p>
+                                    <p class="text-[10px] text-brand-white/30 italic">{{ s.howOut }}</p>
+                                </td>
+                                <td class="p-4 text-center font-black text-brand-red">{{ s.runs }}</td>
+                                <td class="p-4 text-center text-brand-white/60">{{ s.balls }}</td>
+                                <td class="p-4 text-center text-brand-white/60">{{ s.fours }}</td>
+                                <td class="p-4 text-center text-brand-white/60">{{ s.sixes }}</td>
+                                <td class="p-4 text-center pr-8 text-brand-white/40">{{ s.strikeRate }}</td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Bowling Table -->
+                <div class="overflow-x-auto bg-brand-dark/30">
+                    <table class="w-full text-left border-collapse min-w-[600px]">
+                        <thead>
+                            <tr class="bg-brand-dark/50 text-[10px] font-black uppercase text-brand-white/30">
+                                <th class="p-4 pl-8">Bowler</th>
+                                <th class="p-4 text-center">O</th>
+                                <th class="p-4 text-center">R</th>
+                                <th class="p-4 text-center">W</th>
+                                <th class="p-4 text-center pr-8">Econ</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-brand-white/5">
+                            @for (s of getBowlingStats(inningsState()?.bowlingTeamId || '', 2); track s.name) {
+                            <tr class="text-sm font-medium hover:bg-brand-white/5 transition-colors">
+                                <td class="p-4 pl-8 font-bold">{{ s.name }}</td>
+                                <td class="p-4 text-center font-black text-brand-white">{{ s.overs }}</td>
+                                <td class="p-4 text-center text-brand-white/60">{{ s.runs }}</td>
+                                <td class="p-4 text-center font-black text-brand-red">{{ s.wickets }}</td>
+                                <td class="p-4 text-center pr-8 text-brand-white/40">{{ s.economy }}</td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            }
         </div>
 
     </div>
