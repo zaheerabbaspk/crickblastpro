@@ -8,20 +8,46 @@
                     <ion-icon name="arrow-back-outline" class="text-2xl"></ion-icon>
                 </a>
                 <div>
-                    <h1 class="text-2xl font-bold">Add New Player</h1>
-                    <p class="text-brand-white/50 text-sm">Create a new player profile</p>
+                    <h1 class="text-2xl font-bold">{{ isEditMode ? 'Edit Player' : 'Add New Player' }}</h1>
+                    <p class="text-brand-white/50 text-sm">{{ isEditMode ? 'Update player details' : 'Create a new
+                        player profile' }}</p>
                 </div>
             </div>
 
             <button (click)="savePlayer()"
                 class="bg-brand-red text-white h-12 px-8 rounded-2xl flex items-center gap-2 font-bold hover:bg-brand-red/90 transition-all shadow-lg shadow-brand-red/20">
                 <ion-icon name="save-outline" class="text-xl"></ion-icon>
-                <span>Save Player</span>
+                <span>{{ isEditMode ? 'Update Player' : 'Save Player' }}</span>
             </button>
         </div>
 
         <!-- Form Sections -->
         <div class="space-y-6">
+            <!-- Photo Upload -->
+            <section
+                class="bg-brand-accent/50 p-6 lg:p-8 rounded-[40px] border border-brand-white/5 flex flex-col items-center gap-4">
+                <div class="relative group">
+                    <div
+                        class="w-28 h-28 rounded-full bg-brand-dark border-2 border-brand-white/10 overflow-hidden flex items-center justify-center text-brand-white/20">
+                        @if (playerData.photo) {
+                        <img [src]="playerData.photo" class="w-full h-full object-cover">
+                        } @else {
+                        <ion-icon name="person-outline" class="text-4xl"></ion-icon>
+                        }
+                    </div>
+                    <label for="photo-upload"
+                        class="absolute bottom-0 right-0 w-10 h-10 rounded-full bg-brand-red text-white flex items-center justify-center cursor-pointer shadow-lg hover:scale-110 transition-transform">
+                        <ion-icon name="camera-outline"></ion-icon>
+                        <input type="file" id="photo-upload" class="hidden" (change)="handlePhotoChange($event)"
+                            accept="image/*">
+                    </label>
+                </div>
+                <div class="text-center">
+                    <h2 class="text-lg font-bold">Player Photo</h2>
+                    <p class="text-brand-white/50 text-sm">Upload a professional photo or avatar</p>
+                </div>
+            </section>
+
             <!-- Basic Info -->
             <section class="bg-brand-accent/50 p-6 lg:p-8 rounded-[40px] border border-brand-white/5 space-y-6">
                 <div class="flex items-center gap-3 mb-2">

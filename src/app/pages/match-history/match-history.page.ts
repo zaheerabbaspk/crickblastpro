@@ -43,16 +43,34 @@ import { CommonModule } from '@angular/common';
                         </div>
 
                         <div class="flex items-center gap-6 justify-between">
-                            <div class="flex-1 text-right">
-                                <p class="text-lg font-black text-brand-white">{{ teamService.getTeamById(match.teamAId)?.name }}</p>
-                                <p class="text-brand-white/40 text-xs font-bold">{{ match.teamAPlayers.length }} Players</p>
+                            <div class="flex-1 flex flex-col items-end gap-2 text-right">
+                                <div class="w-12 h-12 rounded-xl bg-brand-dark flex items-center justify-center overflow-hidden border border-brand-white/10">
+                                    @if (teamService.getTeamById(match.teamAId)?.logo) {
+                                        <img [src]="teamService.getTeamById(match.teamAId)?.logo" class="w-full h-full object-cover">
+                                    } @else {
+                                        <span class="text-brand-red font-bold">{{ teamService.getTeamById(match.teamAId)?.shortName }}</span>
+                                    }
+                                </div>
+                                <div>
+                                    <p class="text-lg font-black text-brand-white leading-none">{{ teamService.getTeamById(match.teamAId)?.name }}</p>
+                                    <p class="text-brand-white/40 text-[10px] font-bold uppercase tracking-wider mt-1">{{ match.teamAPlayers.length }} Players</p>
+                                </div>
                             </div>
 
-                            <div class="w-12 h-12 bg-brand-white/5 rounded-2xl flex items-center justify-center text-brand-white/20 font-black italic">VS</div>
+                            <div class="w-10 h-10 bg-brand-white/5 rounded-2xl flex items-center justify-center text-brand-white/20 font-black italic text-xs shrink-0">VS</div>
 
-                            <div class="flex-1">
-                                <p class="text-lg font-black text-brand-white">{{ teamService.getTeamById(match.teamBId)?.name }}</p>
-                                <p class="text-brand-white/40 text-xs font-bold">{{ match.teamBPlayers.length }} Players</p>
+                            <div class="flex-1 flex flex-col items-start gap-2">
+                                <div class="w-12 h-12 rounded-xl bg-brand-dark flex items-center justify-center overflow-hidden border border-brand-white/10">
+                                    @if (teamService.getTeamById(match.teamBId)?.logo) {
+                                        <img [src]="teamService.getTeamById(match.teamBId)?.logo" class="w-full h-full object-cover">
+                                    } @else {
+                                        <span class="text-brand-red font-bold">{{ teamService.getTeamById(match.teamBId)?.shortName }}</span>
+                                    }
+                                </div>
+                                <div class="text-left">
+                                    <p class="text-lg font-black text-brand-white leading-none">{{ teamService.getTeamById(match.teamBId)?.name }}</p>
+                                    <p class="text-brand-white/40 text-[10px] font-bold uppercase tracking-wider mt-1">{{ match.teamBPlayers.length }} Players</p>
+                                </div>
                             </div>
                         </div>
 

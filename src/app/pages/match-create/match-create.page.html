@@ -39,17 +39,38 @@
                         [(value)]="matchData.name"></app-input>
 
                     <div class="space-y-3">
-                        <label class="text-sm font-medium text-brand-white/70 px-1">Overs Per Innings</label>
-                        <div class="flex items-center gap-4">
-                            <input type="range" min="1" max="50" [(ngModel)]="matchData.overs"
-                                class="flex-1 accent-brand-red">
-                            <span class="text-2xl font-bold w-12 text-center text-brand-red">{{ matchData.overs
-                                }}</span>
+                        <label class="text-sm font-medium text-brand-white/70 px-1">Match Format</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            @for (f of ['T20', 'ODI', 'Test', 'Custom']; track f) {
+                            <button (click)="setMatchFormat(f)"
+                                [class]="matchFormat() === f ? 'bg-brand-red border-brand-red text-white' : 'bg-brand-dark border-brand-white/10 text-brand-white/50'"
+                                class="h-14 rounded-2xl border font-bold transition-all text-sm">
+                                {{ f }}
+                            </button>
+                            }
                         </div>
                     </div>
 
                     <div class="space-y-3">
-                        <label class="text-sm font-medium text-brand-white/70 px-1">Match Format</label>
+                        <label class="text-sm font-medium text-brand-white/70 px-1">
+                            {{ matchFormat() === 'Test' ? 'Days' : 'Overs Per Innings' }}
+                        </label>
+                        <div class="flex items-center gap-4">
+                            @if (matchFormat() !== 'Custom' && matchFormat() !== 'Test') {
+                            <input type="range" min="1" max="50" [(ngModel)]="matchData.overs"
+                                class="flex-1 accent-brand-red">
+                            } @else {
+                            <div class="flex-1 h-1 bg-brand-white/10 rounded-full overflow-hidden">
+                                <div class="h-full bg-brand-red" [style.width.%]="(matchData.overs / 500) * 100"></div>
+                            </div>
+                            }
+                            <input type="number" [(ngModel)]="matchData.overs"
+                                class="w-20 h-12 bg-brand-dark border border-brand-white/10 rounded-xl px-2 text-center text-xl font-bold text-brand-red focus:border-brand-red outline-none">
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <label class="text-sm font-medium text-brand-white/70 px-1">Match Category</label>
                         <div class="grid grid-cols-3 gap-3">
                             @for (f of ['Friendly', 'League', 'Knockout']; track f) {
                             <button (click)="matchData.format = $any(f)"
@@ -75,9 +96,13 @@
                 <div class="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 pt-8">
                     <div class="w-full md:w-80 flex flex-col items-center gap-6">
                         <div
-                            class="w-32 h-32 rounded-[40px] bg-brand-dark border-2 border-dashed border-brand-white/20 flex items-center justify-center text-brand-white/30 text-5xl font-black">
+                            class="w-32 h-32 rounded-[40px] bg-brand-dark border-2 border-dashed border-brand-white/20 flex items-center justify-center text-brand-white/30 text-5xl font-black overflow-hidden shadow-2xl">
                             @if (matchData.teamAId) {
+                            @if (getTeamLogo(matchData.teamAId)) {
+                            <img [src]="getTeamLogo(matchData.teamAId)" class="w-full h-full object-cover">
+                            } @else {
                             <span class="text-brand-red">{{ getTeamShortName(matchData.teamAId) }}</span>
+                            }
                             } @else {
                             A
                             }
@@ -93,9 +118,13 @@
                     <div class="text-4xl font-black text-brand-red italic opacity-20 hidden md:block">VS</div>
                     <div class="w-full md:w-80 flex flex-col items-center gap-6">
                         <div
-                            class="w-32 h-32 rounded-[40px] bg-brand-dark border-2 border-dashed border-brand-white/20 flex items-center justify-center text-brand-white/30 text-5xl font-black">
+                            class="w-32 h-32 rounded-[40px] bg-brand-dark border-2 border-dashed border-brand-white/20 flex items-center justify-center text-brand-white/30 text-5xl font-black overflow-hidden shadow-2xl">
                             @if (matchData.teamBId) {
+                            @if (getTeamLogo(matchData.teamBId)) {
+                            <img [src]="getTeamLogo(matchData.teamBId)" class="w-full h-full object-cover">
+                            } @else {
                             <span class="text-brand-red">{{ getTeamShortName(matchData.teamBId) }}</span>
+                            }
                             } @else {
                             B
                             }
@@ -135,11 +164,21 @@
                             @for (p of getTeamPlayers(team === 'A' ? matchData.teamAId : matchData.teamBId); track p.id)
                             {
                             <div (click)="togglePlayer(team === 'A' ? 'A' : 'B', p.id)"
-                                class="p-4 rounded-2xl flex items-center justify-between cursor-pointer border transition-all"
+                                class="p-3 rounded-2xl flex items-center gap-4 cursor-pointer border transition-all"
                                 [class.bg-brand-red/10]="(team === 'A' ? matchData.teamAPlayers : matchData.teamBPlayers).includes(p.id)"
                                 [class.border-brand-red/50]="(team === 'A' ? matchData.teamAPlayers : matchData.teamBPlayers).includes(p.id)"
                                 [class.border-transparent]="!(team === 'A' ? matchData.teamAPlayers : matchData.teamBPlayers).includes(p.id)">
-                                <span class="font-bold text-sm">{{ p.fullName }}</span>
+
+                                <div
+                                    class="w-10 h-10 rounded-xl bg-brand-accent flex items-center justify-center text-brand-white/20 overflow-hidden shrink-0 border border-brand-white/5">
+                                    @if (p.photo) {
+                                    <img [src]="p.photo" class="w-full h-full object-cover">
+                                    } @else {
+                                    <ion-icon name="person-outline" class="text-xl"></ion-icon>
+                                    }
+                                </div>
+
+                                <span class="font-bold text-sm flex-1">{{ p.fullName }}</span>
                                 @if ((team === 'A' ? matchData.teamAPlayers : matchData.teamBPlayers).includes(p.id)) {
                                 <ion-icon name="checkmark-circle-outline" class="text-brand-red text-xl"></ion-icon>
                                 }

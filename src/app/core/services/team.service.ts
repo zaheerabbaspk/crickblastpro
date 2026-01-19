@@ -54,6 +54,40 @@ export class TeamService {
         return newTeam;
     }
 
+    updateTeam(updatedTeam: Team) {
+        const teams = this.teamsSignal();
+        const oldTeam = teams.find(t => t.id === updatedTeam.id);
+
+        if (oldTeam) {
+            // Remove team from old players not in new list
+            const removedPlayers = oldTeam.players.filter(pid => !updatedTeam.players.includes(pid));
+            removedPlayers.forEach(pid => {
+                const p = this.playerService.getPlayerById(pid);
+                if (p) {
+                    this.playerService.updatePlayer({
+                        ...p,
+                        teams: p.teams.filter(tid => tid !== updatedTeam.id)
+                    });
+                }
+            });
+
+            // Add team to new players not in old list
+            const addedPlayers = updatedTeam.players.filter(pid => !oldTeam.players.includes(pid));
+            addedPlayers.forEach(pid => {
+                const p = this.playerService.getPlayerById(pid);
+                if (p && !p.teams.includes(updatedTeam.id)) {
+                    this.playerService.updatePlayer({
+                        ...p,
+                        teams: [...p.teams, updatedTeam.id]
+                    });
+                }
+            });
+        }
+
+        const updatedTeams = teams.map(t => t.id === updatedTeam.id ? updatedTeam : t);
+        this.saveTeams(updatedTeams);
+    }
+
     deleteTeam(id: string) {
         const team = this.teamsSignal().find(t => t.id === id);
         if (team) {

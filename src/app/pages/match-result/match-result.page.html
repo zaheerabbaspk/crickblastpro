@@ -9,7 +9,15 @@
             </div>
 
             <div class="relative z-10 space-y-4">
-                <ion-icon name="trophy-outline" class="text-6xl mb-4"></ion-icon>
+                <div class="flex justify-center mb-4">
+                    <div class="w-24 h-24 rounded-3xl bg-white/20 p-2 flex items-center justify-center">
+                        @if (winner()?.logo) {
+                        <img [src]="winner()?.logo" class="w-full h-full object-contain">
+                        } @else {
+                        <ion-icon name="trophy-outline" class="text-4xl"></ion-icon>
+                        }
+                    </div>
+                </div>
                 <h1 class="text-sm font-black uppercase tracking-[0.4em] opacity-70">MATCH COMPLETED</h1>
                 <p class="text-5xl font-black italic">{{ winner()?.name }} WON!</p>
                 <p class="text-xl font-medium opacity-80">{{ resultMargin() }}</p>
@@ -72,8 +80,25 @@
                     </select>
 
                     <div
-                        class="h-20 flex items-center justify-center border-2 border-dashed border-brand-white/10 rounded-2xl opacity-30 italic text-sm">
-                        Player stats summary will appear here
+                        class="h-32 flex items-center gap-6 p-4 border border-brand-white/10 rounded-3xl bg-brand-dark/30">
+                        <div
+                            class="w-20 h-20 rounded-2xl bg-brand-accent overflow-hidden flex items-center justify-center text-brand-white/20">
+                            @if (manOfTheMatchPhoto()) {
+                            <img [src]="manOfTheMatchPhoto()" class="w-full h-full object-cover">
+                            } @else {
+                            <ion-icon name="person-outline" class="text-3xl"></ion-icon>
+                            }
+                        </div>
+                        <div class="flex-1">
+                            @if (manOfTheMatchId()) {
+                            <p class="text-xs font-black uppercase text-brand-red tracking-widest mb-1">Star Performer
+                            </p>
+                            <p class="text-xl font-bold">{{ playerService.getPlayerById(manOfTheMatchId())?.displayName
+                                }}</p>
+                            } @else {
+                            <p class="text-brand-white/30 italic">Select the hero of the match</p>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal, HostListener, computed } from '@angular/core';
 import { UpperCasePipe } from '@angular/common';
 import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { TeamService, Team } from '../../core/services/team.service';
@@ -25,6 +25,28 @@ import {
 export class TeamsPage {
     private teamService = inject(TeamService);
     teams = this.teamService.teams;
+    searchTerm = signal('');
+
+    filteredTeams = computed(() => {
+        const term = this.searchTerm().toLowerCase();
+        if (!term) return this.teams();
+        return this.teams().filter(t =>
+            t.name.toLowerCase().includes(term) ||
+            t.shortName.toLowerCase().includes(term)
+        );
+    });
+
+    activeMenuId = signal<string | null>(null);
+
+    @HostListener('document:click')
+    closeMenu() {
+        this.activeMenuId.set(null);
+    }
+
+    toggleMenu(event: Event, id: string) {
+        event.stopPropagation();
+        this.activeMenuId.set(this.activeMenuId() === id ? null : id);
+    }
 
     constructor() {
         addIcons({ searchOutline, addOutline, ellipsisVerticalOutline, shirtOutline, peopleOutline, createOutline, trashOutline, eyeOutline });

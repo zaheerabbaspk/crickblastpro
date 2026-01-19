@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import { Routes } from '@angular/router'; // Refresh
 
 export const routes: Routes = [
   {
@@ -15,6 +15,27 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/dashboard/dashboard.page').then(m => m.DashboardPage)
   },
   {
+    path: 'live-matches',
+    loadComponent: () => import('./pages/live-matches/live-matches.page').then(m => m.LiveMatchesPage)
+  },
+  {
+    path: 'tournaments',
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./pages/tournaments/tournaments.page').then(m => m.TournamentsPage)
+      },
+      {
+        path: 'create',
+        loadComponent: () => import('./pages/tournament-create/tournament-create.page').then(m => m.TournamentCreatePage)
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./pages/tournament-info/tournament-info.page').then(m => m.TournamentDetailsPage)
+      }
+    ]
+  },
+  {
     path: 'players',
     children: [
       {
@@ -23,6 +44,14 @@ export const routes: Routes = [
       },
       {
         path: 'create',
+        loadComponent: () => import('./pages/players/player-create.page').then(m => m.PlayerCreatePage)
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./pages/players/player-details.page').then(m => m.PlayerDetailsPage)
+      },
+      {
+        path: ':id/edit',
         loadComponent: () => import('./pages/players/player-create.page').then(m => m.PlayerCreatePage)
       }
     ]
@@ -36,6 +65,14 @@ export const routes: Routes = [
       },
       {
         path: 'create',
+        loadComponent: () => import('./pages/teams/team-create.page').then(m => m.TeamCreatePage)
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./pages/teams/team-details.page').then(m => m.TeamDetailsPage)
+      },
+      {
+        path: ':id/edit',
         loadComponent: () => import('./pages/teams/team-create.page').then(m => m.TeamCreatePage)
       }
     ]
@@ -66,7 +103,7 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/match-history/match-history.page').then(m => m.MatchHistoryPage)
   },
   {
-    path: 'tournament-create',
-    loadComponent: () => import('./pages/tournament-create/tournament-create.page').then(m => m.TournamentCreatePage)
+    path: 'public-match/:id',
+    loadComponent: () => import('./pages/public-match-details/public-match-details.page').then(m => m.PublicMatchDetailsPage)
   }
 ];

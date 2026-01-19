@@ -1,0 +1,67 @@
+<ion-content>
+    <div class="space-y-12 pb-24 px-4 lg:px-8 max-w-7xl mx-auto pt-6">
+        <!-- Explorer Header -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+                <h1 class="text-3xl font-black tracking-tight flex items-center gap-3">
+                    <span class="w-3 h-3 rounded-full bg-brand-red animate-pulse"></span>
+                    LIVE EXPLORER
+                </h1>
+                <p class="text-brand-white/40 text-sm mt-1">Discover community matches happening right now</p>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div class="relative flex-1 md:w-64">
+                    <ion-icon name="search-outline"
+                        class="absolute left-4 top-1/2 -translate-y-1/2 text-brand-white/30"></ion-icon>
+                    <input type="text" placeholder="Search matches..."
+                        (input)="searchTerm.set($any($event.target).value)"
+                        class="w-full bg-brand-accent border border-brand-white/10 rounded-2xl pl-12 pr-4 h-14 outline-none focus:border-brand-red transition-all">
+                </div>
+            </div>
+        </div>
+
+        <!-- Personal Matches Section -->
+        @if (personalLiveMatches().length > 0) {
+        <section class="space-y-6">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-brand-red/10 flex items-center justify-center text-brand-red">
+                    <ion-icon name="flash-outline" class="text-xl"></ion-icon>
+                </div>
+                <h2 class="text-xl font-black tracking-tight uppercase">MY ACTIVE MATCHES</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                @for (match of personalLiveMatches(); track match.id) {
+                <app-scorecard [data]="match"></app-scorecard>
+                }
+            </div>
+        </section>
+        }
+
+        <!-- Community Matches Grid -->
+        <section class="space-y-6">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">
+                    <ion-icon name="globe-outline" class="text-xl"></ion-icon>
+                </div>
+                <h2 class="text-xl font-black tracking-tight uppercase">COMMUNITY HUB</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                @for (match of filteredPublicMatches(); track match.id) {
+                <app-scorecard [data]="match"></app-scorecard>
+                } @empty {
+                <div
+                    class="col-span-full py-32 flex flex-col items-center justify-center text-center bg-brand-accent/30 rounded-[60px] border-2 border-dashed border-brand-white/5">
+                    <div
+                        class="w-24 h-24 rounded-full bg-brand-dark flex items-center justify-center text-4xl mb-6 opacity-20">
+                        🔍</div>
+                    <h3 class="text-2xl font-black text-brand-white/60">No Live Matches Found</h3>
+                    <p class="text-brand-white/20 text-sm mt-2 max-w-xs">We couldn't find any live matches matching your
+                        search. Try a different term or check back later!</p>
+                </div>
+                }
+            </div>
+        </section>
+    </div>
+</ion-content>

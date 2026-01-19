@@ -1,9 +1,9 @@
 <ion-content>
-    <div class="max-w-4xl mx-auto space-y-8 pb-20">
+    <div class="max-w-6xl mx-auto space-y-8 pb-20">
         <!-- Header -->
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-4">
-                <a [routerLink]="['/dashboard']"
+                <a [routerLink]="['/tournaments']"
                     class="w-12 h-12 flex items-center justify-center rounded-2xl bg-brand-accent text-brand-white hover:bg-brand-accent/80 transition-all">
                     <ion-icon name="arrow-back-outline" class="text-2xl"></ion-icon>
                 </a>
@@ -16,96 +16,325 @@
             <button (click)="createTournament()"
                 class="bg-brand-red text-white h-12 px-8 rounded-2xl flex items-center gap-2 font-bold hover:bg-brand-red/90 transition-all shadow-lg shadow-brand-red/20">
                 <ion-icon name="save-outline" class="text-xl"></ion-icon>
-                <span>Create</span>
+                <span>Create Tournament</span>
             </button>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Tournament Specs -->
-            <div class="lg:col-span-1 space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Tournament Specs & Settings -->
+            <div class="lg:col-span-5 space-y-6">
+                <!-- Basic Info -->
                 <section class="bg-brand-accent/50 p-6 rounded-[40px] border border-brand-white/5 space-y-6">
                     <div class="flex items-center gap-3 mb-2">
                         <div
                             class="w-10 h-10 rounded-xl bg-brand-red/10 flex items-center justify-center text-brand-red">
                             <ion-icon name="trophy-outline" class="text-xl"></ion-icon>
                         </div>
-                        <h2 class="text-lg font-bold">Details</h2>
+                        <h2 class="text-lg font-bold">Tournament Details</h2>
                     </div>
 
-                    <app-input label="Tournament Name" placeholder="e.g. World Cup 2026"
+                    <app-input label="Tournament Name" placeholder="e.g. Champions Trophy 2026"
                         [(value)]="tournamentData.name"></app-input>
 
                     <div class="space-y-3">
-                        <label class="text-sm font-medium text-brand-white/70 px-1">Format</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            @for (f of ['League', 'Knockout']; track f) {
+                        <label class="text-sm font-medium text-brand-white/70 px-1">Competition Format</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            @for (f of ['League', 'Knockout', 'League + Knockout']; track f) {
                             <button (click)="tournamentData.format = $any(f)"
                                 [class]="tournamentData.format === f ? 'bg-brand-red text-white border-brand-red' : 'bg-brand-dark text-brand-white/50 border-brand-white/10'"
-                                class="h-14 rounded-2xl border font-bold transition-all text-sm">
+                                class="h-14 rounded-2xl border font-bold transition-all text-[11px] uppercase tracking-wider">
                                 {{ f }}
                             </button>
                             }
                         </div>
                     </div>
 
-                    @if (tournamentData.format === 'League') {
-                    <div class="pt-4 border-t border-brand-white/5 space-y-4">
-                        <app-input label="Points per Win" type="number"
-                            [(value)]="tournamentData.pointsPerWin"></app-input>
+                    <div class="space-y-3">
+                        <label class="text-sm font-medium text-brand-white/70 px-1">Overs Per Match</label>
+                        <div class="flex items-center gap-4">
+                            <input type="range" min="1" max="50" [(ngModel)]="tournamentData.overs"
+                                class="flex-1 accent-brand-red">
+                            <input type="number" [(ngModel)]="tournamentData.overs"
+                                class="w-16 h-12 bg-brand-dark border border-brand-white/10 rounded-xl text-center font-bold text-brand-red outline-none">
+                        </div>
                     </div>
-                    }
+                </section>
+
+                <!-- Points System -->
+                <section class="bg-brand-accent/50 p-6 rounded-[40px] border border-brand-white/5 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
+                                <ion-icon name="settings-outline" class="text-xl"></ion-icon>
+                            </div>
+                            <h2 class="text-lg font-bold">Points System</h2>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] text-brand-white/30 font-bold uppercase">Bonus Points</span>
+                            <button (click)="tournamentData.bonusPoints = !tournamentData.bonusPoints"
+                                [class]="tournamentData.bonusPoints ? 'bg-brand-red' : 'bg-brand-dark'"
+                                class="w-10 h-5 rounded-full relative transition-all duration-300 border border-brand-white/10">
+                                <div [class]="tournamentData.bonusPoints ? 'translate-x-5' : 'translate-x-0'"
+                                    class="absolute top-0.5 left-0.5 w-3.5 h-3.5 bg-white rounded-full transition-all">
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 pt-2">
+                        <div class="space-y-2">
+                            <label
+                                class="text-[10px] font-bold text-brand-white/30 uppercase text-center block">Win</label>
+                            <input type="number" [(ngModel)]="tournamentData.pointsPerWin"
+                                class="w-full h-12 bg-brand-dark border border-brand-white/10 rounded-xl text-center font-black text-green-500">
+                        </div>
+                        <div class="space-y-2">
+                            <label
+                                class="text-[10px] font-bold text-brand-white/30 uppercase text-center block">Draw/NR</label>
+                            <input type="number" [(ngModel)]="tournamentData.pointsPerDraw"
+                                class="w-full h-12 bg-brand-dark border border-brand-white/10 rounded-xl text-center font-black text-blue-500">
+                        </div>
+                        <div class="space-y-2">
+                            <label
+                                class="text-[10px] font-bold text-brand-white/30 uppercase text-center block">Loss</label>
+                            <input type="number" [(ngModel)]="tournamentData.pointsPerLoss"
+                                class="w-full h-12 bg-brand-dark border border-brand-white/10 rounded-xl text-center font-black text-brand-red">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Logistics -->
+                <section class="bg-brand-accent/50 p-6 rounded-[40px] border border-brand-white/5 space-y-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">
+                            <ion-icon name="calendar-outline" class="text-xl"></ion-icon>
+                        </div>
+                        <h2 class="text-lg font-bold">Logistics</h2>
+                    </div>
+
+                    <app-input label="Main Venue" icon="location-outline" placeholder="e.g. National Stadium"
+                        [(value)]="tournamentData.venue"></app-input>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium text-brand-white/70 px-1">Start Date</label>
+                            <div class="relative">
+                                <ion-icon name="calendar-outline"
+                                    class="absolute left-4 top-1/2 -translate-y-1/2 text-brand-white/30"></ion-icon>
+                                <input type="date" [(ngModel)]="tournamentData.startDate"
+                                    class="w-full bg-brand-dark border border-brand-white/10 rounded-2xl pl-12 pr-4 h-14 outline-none focus:border-brand-red transition-all text-sm">
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium text-brand-white/70 px-1">End Date (Est.)</label>
+                            <div class="relative">
+                                <ion-icon name="calendar-outline"
+                                    class="absolute left-4 top-1/2 -translate-y-1/2 text-brand-white/30"></ion-icon>
+                                <input type="date" [(ngModel)]="tournamentData.endDate"
+                                    class="w-full bg-brand-dark border border-brand-white/10 rounded-2xl pl-12 pr-4 h-14 outline-none focus:border-brand-red transition-all text-sm">
+                            </div>
+                        </div>
+                    </div>
                 </section>
             </div>
 
             <!-- Team Selection -->
-            <div class="lg:col-span-2 space-y-6">
+            <div class="lg:col-span-7 space-y-6">
                 <section
-                    class="bg-brand-accent/50 p-6 rounded-[40px] border border-brand-white/5 flex flex-col min-h-[500px]">
-                    <div class="flex items-center justify-between mb-6">
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="w-10 h-10 rounded-xl bg-brand-red/10 flex items-center justify-center text-brand-red">
-                                <ion-icon name="shirt-outline" class="text-xl"></ion-icon>
-                            </div>
-                            <h2 class="text-lg font-bold">Select Teams <span
-                                    class="text-brand-white/30 text-sm font-normal ml-2">({{
-                                    tournamentData.selectedTeams.length }})</span></h2>
+                    class="bg-brand-accent/50 p-6 rounded-[40px] border border-brand-white/5 flex flex-col h-full min-h-[600px]">
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h2 class="text-2xl font-black">SELECT TEAMS</h2>
+                            <p class="text-brand-white/30 text-sm mt-1">Pick at least 2 teams to participate</p>
+                        </div>
+                        <div class="bg-brand-red/10 px-4 py-2 rounded-2xl border border-brand-red/20">
+                            <span class="text-brand-red font-black text-xl">{{ tournamentData.selectedTeams.length
+                                }}</span>
+                            <span
+                                class="text-brand-red/50 text-xs font-bold uppercase ml-2 tracking-widest">Active</span>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div
+                        class="grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-y-auto pr-2 max-h-[700px] custom-scrollbar">
                         @for (team of teams(); track team.id) {
                         <div (click)="toggleTeam(team.id)"
-                            class="flex items-center gap-4 p-4 rounded-2xl border transition-all cursor-pointer group"
+                            class="flex items-center gap-4 p-5 rounded-[30px] border transition-all cursor-pointer group hover:scale-[1.02] active:scale-95"
                             [class.bg-brand-red/10]="tournamentData.selectedTeams.includes(team.id)"
                             [class.border-brand-red/50]="tournamentData.selectedTeams.includes(team.id)"
                             [class.bg-brand-dark/50]="!tournamentData.selectedTeams.includes(team.id)"
                             [class.border-brand-white/5]="!tournamentData.selectedTeams.includes(team.id)">
-                            <div
-                                class="w-12 h-12 rounded-xl bg-brand-accent flex items-center justify-center font-bold text-brand-red">
-                                {{ team.shortName }}
+
+                            <div class="relative">
+                                <div
+                                    class="w-16 h-16 rounded-2xl bg-brand-accent flex items-center justify-center font-black text-2xl text-brand-red border border-brand-white/5 overflow-hidden shadow-inner">
+                                    @if (team.logo) {
+                                    <img [src]="team.logo" class="w-full h-full object-cover">
+                                    } @else {
+                                    {{ team.shortName }}
+                                    }
+                                </div>
+                                @if (tournamentData.selectedTeams.includes(team.id)) {
+                                <div
+                                    class="absolute -top-2 -right-2 w-6 h-6 bg-brand-red rounded-full flex items-center justify-center border-2 border-brand-accent text-white">
+                                    <ion-icon name="checkmark" class="text-xs"></ion-icon>
+                                </div>
+                                }
                             </div>
+
                             <div class="flex-1">
-                                <p class="font-bold text-sm">{{ team.name }}</p>
-                                <p class="text-[10px] text-brand-white/40 uppercase">{{ team.players.length }} Players
+                                <p class="font-bold text-lg leading-tight">{{ team.name }}</p>
+                                <p class="text-[10px] text-brand-white/40 uppercase font-black tracking-widest mt-1">
+                                    {{ team.players.length }} Players in Squad
                                 </p>
                             </div>
-                            @if (tournamentData.selectedTeams.includes(team.id)) {
-                            <ion-icon name="checkmark-circle-outline" class="text-brand-red text-xl"></ion-icon>
-                            }
                         </div>
                         } @empty {
                         <div
-                            class="col-span-full h-60 flex flex-col items-center justify-center text-center opacity-50 border border-dashed border-brand-white/10 rounded-3xl">
-                            <ion-icon name="shirt-outline" class="text-4xl mb-2"></ion-icon>
-                            <p>No teams available</p>
+                            class="col-span-full h-80 flex flex-col items-center justify-center text-center p-8 bg-brand-dark/30 border border-dashed border-brand-white/10 rounded-[40px]">
+                            <div
+                                class="w-20 h-20 rounded-full bg-brand-accent/50 flex items-center justify-center mb-4">
+                                <ion-icon name="shirt-outline" class="text-4xl text-brand-white/20"></ion-icon>
+                            </div>
+                            <h3 class="text-xl font-bold">No teams available</h3>
+                            <p class="text-brand-white/40 text-sm mt-1 max-w-xs">You need to create some teams before
+                                organizing a tournament.</p>
                             <a [routerLink]="['/teams/create']"
-                                class="text-brand-red text-sm font-bold mt-2 hover:underline">Create a team first</a>
+                                class="mt-6 bg-brand-red/10 text-brand-red px-6 py-3 rounded-2xl font-bold hover:bg-brand-red hover:text-white transition-all">
+                                Create a Team
+                            </a>
                         </div>
                         }
+                    </div>
+
+                    <div class="mt-auto pt-8 flex items-center gap-4">
+                        <div
+                            class="flex-1 p-4 bg-yellow-500/10 rounded-2xl border border-yellow-500/20 flex items-center gap-3">
+                            <ion-icon name="alert-circle-outline" class="text-xl text-yellow-500"></ion-icon>
+                            <p class="text-[11px] text-yellow-500/70 leading-snug">
+                                Teams must have at least 11 players for standard matches. Ensure your squads are ready!
+                            </p>
+                        </div>
                     </div>
                 </section>
             </div>
         </div>
+
+        <!-- Fixtures & Schedule -->
+        <section class="bg-brand-accent/50 p-8 rounded-[50px] border border-brand-white/5 space-y-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-brand-red/10 flex items-center justify-center text-brand-red">
+                        <ion-icon name="calendar-outline" class="text-2xl"></ion-icon>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-black">FIXTURES & SCHEDULE</h2>
+                        <p class="text-brand-white/30 text-sm">Set up match-ups and location details</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Fixture Form -->
+            <div
+                class="grid grid-cols-1 md:grid-cols-5 gap-4 p-6 bg-brand-dark/30 rounded-[32px] border border-brand-white/5 items-end">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-brand-white/30 uppercase tracking-widest px-1">Team
+                        1</label>
+                    <div class="relative">
+                        <select [(ngModel)]="fixtureInput.teamAId"
+                            class="w-full h-14 bg-brand-accent border border-brand-white/10 rounded-2xl px-4 text-sm outline-none focus:border-brand-red appearance-none">
+                            <option value="">Select Team</option>
+                            @for (team of getSelectedTeams(); track team.id) {
+                            <option [value]="team.id">{{ team.name }}</option>
+                            }
+                        </select>
+                        <ion-icon name="chevron-down-outline"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 text-brand-white/20 pointer-events-none"></ion-icon>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-center h-14">
+                    <span class="text-brand-white/10 font-black italic">VS</span>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-brand-white/30 uppercase tracking-widest px-1">Team
+                        2</label>
+                    <div class="relative">
+                        <select [(ngModel)]="fixtureInput.teamBId"
+                            class="w-full h-14 bg-brand-accent border border-brand-white/10 rounded-2xl px-4 text-sm outline-none focus:border-brand-red appearance-none">
+                            <option value="">Select Team</option>
+                            @for (team of getSelectedTeams(); track team.id) {
+                            <option [value]="team.id">{{ team.name }}</option>
+                            }
+                        </select>
+                        <ion-icon name="chevron-down-outline"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 text-brand-white/20 pointer-events-none"></ion-icon>
+                    </div>
+                </div>
+
+                <div class="space-y-2 lg:col-span-1">
+                    <label
+                        class="text-[10px] font-black text-brand-white/30 uppercase tracking-widest px-1">Venue</label>
+                    <input type="text" [(ngModel)]="fixtureInput.venue" placeholder="Match Location"
+                        class="w-full h-14 bg-brand-accent border border-brand-white/10 rounded-2xl px-4 text-sm outline-none focus:border-brand-red">
+                </div>
+
+                <div class="flex gap-2">
+                    <input type="date" [(ngModel)]="fixtureInput.date"
+                        class="flex-1 h-14 bg-brand-accent border border-brand-white/10 rounded-2xl px-4 text-xs outline-none focus:border-brand-red">
+                    <button (click)="addFixture()"
+                        class="aspect-square h-14 bg-brand-red text-white rounded-2xl flex items-center justify-center shadow-lg shadow-brand-red/20 hover:scale-105 transition-all">
+                        <ion-icon name="add-outline" class="text-2xl"></ion-icon>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Fixtures List -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                @for (fixture of tournamentData.fixtures; track fixture.id; let i = $index) {
+                <div
+                    class="bg-brand-accent p-6 rounded-[30px] border border-brand-white/5 flex items-center justify-between group">
+                    <div class="flex items-center gap-6">
+                        <div
+                            class="w-10 h-10 rounded-full bg-brand-dark flex items-center justify-center text-[10px] font-black italic text-brand-white/20 border border-brand-white/5">
+                            {{ i + 1 }}
+                        </div>
+                        <div>
+                            <h4 class="font-bold flex items-center gap-2">
+                                {{ getTeamName(fixture.teamAId) }}
+                                <span class="text-brand-red font-black text-[10px] italic mx-1">VS</span>
+                                {{ getTeamName(fixture.teamBId) }}
+                            </h4>
+                            <div class="flex items-center gap-3 mt-1">
+                                <span
+                                    class="flex items-center gap-1 text-[9px] text-brand-white/30 font-black uppercase tracking-widest">
+                                    <ion-icon name="location-outline"></ion-icon>
+                                    {{ fixture.venue }}
+                                </span>
+                                <span
+                                    class="flex items-center gap-1 text-[9px] text-brand-white/30 font-black uppercase tracking-widest">
+                                    <ion-icon name="calendar-outline"></ion-icon>
+                                    {{ fixture.date }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <button (click)="removeFixture(fixture.id)"
+                        class="w-10 h-10 rounded-xl bg-brand-white/5 text-brand-white/20 flex items-center justify-center hover:bg-brand-red/10 hover:text-brand-red transition-all">
+                        <ion-icon name="close-outline" class="text-xl"></ion-icon>
+                    </button>
+                </div>
+                } @empty {
+                <div
+                    class="col-span-full py-12 flex flex-col items-center justify-center text-center opacity-30 border-2 border-dashed border-brand-white/5 rounded-[40px]">
+                    <ion-icon name="list-outline" class="text-4xl mb-2"></ion-icon>
+                    <p class="text-sm font-bold uppercase tracking-widest">No fixtures added yet</p>
+                </div>
+                }
+            </div>
+        </section>
     </div>
 </ion-content>

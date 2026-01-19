@@ -52,8 +52,8 @@
         </div>
 
         <div class="flex items-center gap-3">
-          <button
-            class="w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-xl bg-brand-accent text-brand-white hover:bg-brand-accent/80">
+          <button (click)="toggleQuickActions()"
+            class="w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-xl bg-brand-accent text-brand-white hover:bg-brand-accent/80 transition-all hover:text-brand-red">
             <ion-icon name="add-circle" class="text-2xl"></ion-icon>
           </button>
         </div>
@@ -64,16 +64,107 @@
         <ion-router-outlet></ion-router-outlet>
       </div>
 
+      <!-- Quick Action FAB (Mobile Only) -->
+      <div class="lg:hidden absolute bottom-3 left-1/2 -translate-x-1/2 z-50">
+        <button (click)="toggleQuickActions()"
+          class="w-14 h-14 rounded-full bg-brand-red text-white shadow-2xl shadow-brand-red/40 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
+          [class.rotate-45]="showQuickActions()">
+          <ion-icon name="add" class="text-3xl"></ion-icon>
+        </button>
+      </div>
+
+      <!-- Quick Action Modal -->
+      @if (showQuickActions()) {
+      <div class="fixed inset-0 z-40 flex items-center justify-center px-6">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-brand-dark/80 backdrop-blur-sm" (click)="toggleQuickActions()"></div>
+
+        <!-- Content -->
+        <div
+          class="relative w-full max-w-sm bg-brand-accent p-8 rounded-[40px] border border-brand-white/10 shadow-2xl animate-in fade-in zoom-in duration-200">
+          <div class="space-y-6">
+            <div class="text-center mb-6">
+              <h3 class="text-xl font-bold">Quick Actions</h3>
+              <p class="text-brand-white/50 text-xs mt-1">What would you like to create?</p>
+            </div>
+
+            <div class="grid gap-4">
+              <a [routerLink]="['/match-create']" (click)="toggleQuickActions()"
+                class="flex items-center gap-4 p-4 bg-brand-dark/50 rounded-2xl border border-brand-white/5 hover:border-brand-red/30 transition-all group">
+                <div class="w-10 h-10 rounded-xl bg-brand-red/10 flex items-center justify-center text-brand-red">
+                  <ion-icon name="globe" class="text-xl"></ion-icon>
+                </div>
+                <div>
+                  <p class="font-bold group-hover:text-brand-red transition-colors">Create Public Match</p>
+                  <p class="text-[10px] text-brand-white/30 uppercase font-black">Open to everyone</p>
+                </div>
+              </a>
+
+              <a [routerLink]="['/match-create']" (click)="toggleQuickActions()"
+                class="flex items-center gap-4 p-4 bg-brand-dark/50 rounded-2xl border border-brand-white/5 hover:border-brand-red/30 transition-all group">
+                <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
+                  <ion-icon name="lock-closed" class="text-xl"></ion-icon>
+                </div>
+                <div>
+                  <p class="font-bold group-hover:text-blue-500 transition-colors">Create Private Match</p>
+                  <p class="text-[10px] text-brand-white/30 uppercase font-black">Invite only</p>
+                </div>
+              </a>
+
+              <a [routerLink]="['/tournaments/create']" (click)="toggleQuickActions()"
+                class="flex items-center gap-4 p-4 bg-brand-dark/50 rounded-2xl border border-brand-white/5 hover:border-brand-red/30 transition-all group">
+                <div class="w-10 h-10 rounded-xl bg-yellow-500/10 flex items-center justify-center text-yellow-500">
+                  <ion-icon name="trophy" class="text-xl"></ion-icon>
+                </div>
+                <div>
+                  <p class="font-bold group-hover:text-yellow-500 transition-colors">Create Tournament</p>
+                  <p class="text-[10px] text-brand-white/30 uppercase font-black">Multi-team competition</p>
+                </div>
+              </a>
+            </div>
+
+            <button (click)="toggleQuickActions()"
+              class="w-full h-12 flex items-center justify-center text-brand-white/50 font-bold hover:text-brand-white transition-colors">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+      }
+
       <!-- Bottom Navigation (Mobile) -->
-      <nav class="lg:hidden h-16 bg-brand-accent border-t border-brand-white/10 px-2 flex-shrink-0">
-        <div class="flex items-center justify-around h-full">
-          @for (p of appPages.slice(0, 5); track p.title) {
-          <a [routerLink]="[p.url]" routerLinkActive="text-brand-red"
-            class="flex flex-col items-center gap-1 text-brand-white/50" [routerLinkActiveOptions]="{ exact: true }">
-            <ion-icon [name]="p.icon" class="text-2xl"></ion-icon>
-            <span class="text-[10px]">{{ p.title }}</span>
-          </a>
-          }
+      <nav class="lg:hidden h-20 bg-brand-accent border-t border-brand-white/10 px-4 flex-shrink-0 relative z-30">
+        <div class="flex items-center justify-between h-full max-w-lg mx-auto">
+          <!-- Left side -->
+          <div class="flex flex-1 justify-around">
+            <a [routerLink]="['/dashboard']" routerLinkActive="text-brand-red"
+              class="flex flex-col items-center gap-1 text-brand-white/50" [routerLinkActiveOptions]="{ exact: true }">
+              <ion-icon name="grid" class="text-2xl"></ion-icon>
+              <span class="text-[10px] font-bold">Home</span>
+            </a>
+            <a [routerLink]="['/players']" routerLinkActive="text-brand-red"
+              class="flex flex-col items-center gap-1 text-brand-white/50" [routerLinkActiveOptions]="{ exact: true }">
+              <ion-icon name="people" class="text-2xl"></ion-icon>
+              <span class="text-[10px] font-bold">Players</span>
+            </a>
+          </div>
+
+          <!-- Middle space for FAB -->
+          <div class="w-20"></div>
+
+          <!-- Right side -->
+          <div class="flex flex-1 justify-around">
+            <a [routerLink]="['/live-matches']" routerLinkActive="text-brand-red"
+              class="flex flex-col items-center gap-1 text-brand-white/50" [routerLinkActiveOptions]="{ exact: true }">
+              <ion-icon name="videocam" class="text-2xl"></ion-icon>
+              <span class="text-[10px] font-bold">Live</span>
+            </a>
+            <a [routerLink]="['/tournaments']" routerLinkActive="text-brand-red"
+              class="flex flex-col items-center gap-1 text-brand-white/50" [routerLinkActiveOptions]="{ exact: true }">
+              <ion-icon name="trophy" class="text-2xl"></ion-icon>
+              <span class="text-[10px] font-bold">Tours</span>
+            </a>
+          </div>
         </div>
       </nav>
 

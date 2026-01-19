@@ -8,15 +8,16 @@
                     <ion-icon name="arrow-back-outline" class="text-2xl"></ion-icon>
                 </a>
                 <div>
-                    <h1 class="text-2xl font-bold">Create Team</h1>
-                    <p class="text-brand-white/50 text-sm">Build your team squad</p>
+                    <h1 class="text-2xl font-bold">{{ isEditMode ? 'Edit Team' : 'Create Team' }}</h1>
+                    <p class="text-brand-white/50 text-sm">{{ isEditMode ? 'Update your team squad' : 'Build your team
+                        squad' }}</p>
                 </div>
             </div>
 
             <button (click)="saveTeam()"
                 class="bg-brand-red text-white h-12 px-8 rounded-2xl flex items-center gap-2 font-bold hover:bg-brand-red/90 transition-all shadow-lg shadow-brand-red/20">
                 <ion-icon name="save-outline" class="text-xl"></ion-icon>
-                <span>Save Team</span>
+                <span>{{ isEditMode ? 'Update Team' : 'Save Team' }}</span>
             </button>
         </div>
 
@@ -30,6 +31,27 @@
                             <ion-icon name="shirt-outline" class="text-xl"></ion-icon>
                         </div>
                         <h2 class="text-lg font-bold">Team Profile</h2>
+                    </div>
+
+                    <!-- Team Logo Upload -->
+                    <div class="flex flex-col items-center gap-3 py-4">
+                        <div class="relative group">
+                            <div
+                                class="w-24 h-24 rounded-2xl bg-brand-dark border border-brand-white/10 overflow-hidden flex items-center justify-center text-brand-white/20">
+                                @if (teamData.logo) {
+                                <img [src]="teamData.logo" class="w-full h-full object-cover">
+                                } @else {
+                                <ion-icon name="shirt-outline" class="text-3xl"></ion-icon>
+                                }
+                            </div>
+                            <label for="logo-upload"
+                                class="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-brand-red text-white flex items-center justify-center cursor-pointer shadow-lg hover:scale-110 transition-transform">
+                                <ion-icon name="camera-outline" class="text-sm"></ion-icon>
+                                <input type="file" id="logo-upload" class="hidden" (change)="handleLogoChange($event)"
+                                    accept="image/*">
+                            </label>
+                        </div>
+                        <p class="text-[10px] text-brand-white/40 uppercase tracking-widest font-bold">Team Logo</p>
                     </div>
 
                     <app-input label="Team Name" placeholder="e.g. Mumbai Indians"
@@ -95,9 +117,28 @@
                             </button>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <app-input placeholder="Full Name" [(value)]="newPlayerData.fullName"></app-input>
-                            <app-input placeholder="Display Name" [(value)]="newPlayerData.displayName"></app-input>
+                        <div class="flex items-center gap-4">
+                            <!-- Inline Player Photo -->
+                            <div class="relative shrink-0">
+                                <div
+                                    class="w-14 h-14 rounded-xl bg-brand-accent border border-brand-white/10 overflow-hidden flex items-center justify-center text-brand-white/20">
+                                    @if (newPlayerData.photo) {
+                                    <img [src]="newPlayerData.photo" class="w-full h-full object-cover">
+                                    } @else {
+                                    <ion-icon name="person-outline" class="text-xl"></ion-icon>
+                                    }
+                                </div>
+                                <label for="inline-photo-upload"
+                                    class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-brand-red text-white flex items-center justify-center cursor-pointer shadow-lg">
+                                    <ion-icon name="camera-outline" class="text-[10px]"></ion-icon>
+                                    <input type="file" id="inline-photo-upload" class="hidden"
+                                        (change)="handleInlinePhotoChange($event)" accept="image/*">
+                                </label>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
+                                <app-input placeholder="Full Name" [(value)]="newPlayerData.fullName"></app-input>
+                                <app-input placeholder="Display Name" [(value)]="newPlayerData.displayName"></app-input>
+                            </div>
                         </div>
 
                         <div class="flex justify-end pt-2">
@@ -127,15 +168,22 @@
                             [class.border-brand-red/50]="isPlayerSelected(player.id)"
                             [class.bg-brand-dark/50]="!isPlayerSelected(player.id)"
                             [class.border-brand-white/5]="!isPlayerSelected(player.id)">
-                            <div class="w-12 h-12 rounded-xl flex items-center justify-center font-bold transition-all text-sm"
+                            <div class="w-12 h-12 rounded-xl flex items-center justify-center font-bold transition-all text-sm overflow-hidden relative"
                                 [class.bg-brand-red]="isPlayerSelected(player.id)"
                                 [class.text-white]="isPlayerSelected(player.id)"
                                 [class.bg-brand-accent]="!isPlayerSelected(player.id)"
                                 [class.text-brand-white/50]="!isPlayerSelected(player.id)">
-                                @if (isPlayerSelected(player.id)) {
-                                <ion-icon name="checkmark-circle-outline" class="text-xl"></ion-icon>
+                                @if (player.photo) {
+                                <img [src]="player.photo" class="w-full h-full object-cover"
+                                    [class.opacity-40]="isPlayerSelected(player.id)">
                                 } @else {
                                 {{ player.displayName[0] | uppercase }}
+                                }
+
+                                @if (isPlayerSelected(player.id)) {
+                                <div class="absolute inset-0 flex items-center justify-center bg-brand-red/40">
+                                    <ion-icon name="checkmark-circle-outline" class="text-xl text-white"></ion-icon>
+                                </div>
                                 }
                             </div>
 

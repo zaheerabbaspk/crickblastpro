@@ -32,6 +32,7 @@ export class MatchCreatePage {
     private router = inject(Router);
 
     currentStep = signal(1);
+    matchFormat = signal('T20');
     teams = this.teamService.teams;
 
     matchData = {
@@ -45,6 +46,13 @@ export class MatchCreatePage {
         venue: '',
         umpires: ''
     };
+
+    setMatchFormat(format: string) {
+        this.matchFormat.set(format);
+        if (format === 'T20') this.matchData.overs = 20;
+        if (format === 'ODI') this.matchData.overs = 50;
+        if (format === 'Test') this.matchData.overs = 5;
+    }
 
     getTeamPlayers(teamId: string): Player[] {
         const team = this.teams().find(t => t.id === teamId);
@@ -60,6 +68,11 @@ export class MatchCreatePage {
     getTeamName(teamId: string): string {
         const team = this.teams().find(t => t.id === teamId);
         return team ? team.name : '';
+    }
+
+    getTeamLogo(teamId: string): string {
+        const team = this.teams().find(t => t.id === teamId);
+        return team ? team.logo || '' : '';
     }
 
     constructor() {

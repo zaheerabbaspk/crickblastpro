@@ -3,7 +3,7 @@ import { UpperCasePipe } from '@angular/common';
 import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { TeamService, Team } from '../../core/services/team.service';
 import { PlayerService, Player } from '../../core/services/player.service';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { InputComponent } from '../../shared/components/input/input.component';
 import { addIcons } from 'ionicons';
 import {
@@ -13,7 +13,9 @@ import {
     peopleOutline,
     addOutline,
     closeOutline,
-    checkmarkCircleOutline
+    checkmarkCircleOutline,
+    cameraOutline,
+    personOutline
 } from 'ionicons/icons';
 import { FormsModule } from '@angular/forms';
 
@@ -27,12 +29,17 @@ export class TeamCreatePage {
     private teamService = inject(TeamService);
     private playerService = inject(PlayerService);
     private router = inject(Router);
+    private route = inject(ActivatedRoute);
+
+    isEditMode = false;
+    teamId: string | null = null;
 
     allPlayers = this.playerService.players;
 
-    teamData = {
+    teamData: any = {
         name: '',
         shortName: '',
+        logo: '',
         players: [] as string[],
         captainId: '',
         wicketkeeperId: ''
@@ -45,7 +52,8 @@ export class TeamCreatePage {
         displayName: '',
         role: 'Batsman' as Player['role'],
         battingStyle: 'Right-handed' as Player['battingStyle'],
-        bowlingStyle: 'None' as Player['bowlingStyle']
+        bowlingStyle: 'None' as Player['bowlingStyle'],
+        photo: ''
     };
 
     searchTerm = signal('');
@@ -64,8 +72,39 @@ export class TeamCreatePage {
     constructor() {
         addIcons({
             arrowBackOutline, saveOutline, shirtOutline, peopleOutline,
-            addOutline, closeOutline, checkmarkCircleOutline
+            addOutline, closeOutline, checkmarkCircleOutline, cameraOutline, personOutline
         });
+
+        this.teamId = this.route.snapshot.paramMap.get('id');
+        if (this.teamId) {
+            this.isEditMode = true;
+            const team = this.teamService.getTeamById(this.teamId);
+            if (team) {
+                this.teamData = { ...team };
+            }
+        }
+    }
+
+    handleLogoChange(event: any) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                this.teamData.logo = reader.result as string;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    handleInlinePhotoChange(event: any) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                this.newPlayerData.photo = reader.result as string;
+            };
+            reader.readAsDataURL(file);
+        }
     }
 
     togglePlayerSelection(playerId: string) {
@@ -90,7 +129,8 @@ export class TeamCreatePage {
             displayName: this.newPlayerData.displayName,
             role: this.newPlayerData.role,
             battingStyle: this.newPlayerData.battingStyle,
-            bowlingStyle: this.newPlayerData.bowlingStyle
+            bowlingStyle: this.newPlayerData.bowlingStyle,
+            photo: this.newPlayerData.photo
         });
         this.togglePlayerSelection(addedPlayer.id);
         this.resetInlineForm();
@@ -103,7 +143,8 @@ export class TeamCreatePage {
             displayName: '',
             role: 'Batsman',
             battingStyle: 'Right-handed',
-            bowlingStyle: 'None'
+            bowlingStyle: 'None',
+            photo: ''
         };
     }
 
@@ -116,7 +157,16 @@ export class TeamCreatePage {
             alert('Please add at least one player to the team');
             return;
         }
-        this.teamService.addTeam(this.teamData);
+
+        if (this.isEditMode && this.teamId) {
+            this.teamService.updateTeam({
+                ...this.teamData,
+                id: this.teamId
+            } as Team);
+        } else {
+            this.teamService.addTeam(this.teamData);
+        }
+
         this.router.navigate(['/teams']);
     }
 }

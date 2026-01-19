@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { IonApp, IonRouterOutlet, IonSplitPane, IonMenu, IonContent, IonList, IonItem, IonIcon, IonLabel, IonMenuToggle, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonFooter, IonTabs, IonTabBar, IonTabButton } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -10,7 +10,11 @@ import {
   settingsOutline,
   addCircleOutline,
   videocamOutline,
-  listOutline
+  listOutline,
+  closeOutline,
+  globeOutline,
+  lockClosedOutline,
+  addOutline
 } from 'ionicons/icons';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
@@ -36,6 +40,12 @@ export class AppComponent {
     { title: 'Settings', url: '/settings', icon: 'settings' },
   ];
 
+  showQuickActions = signal(false);
+
+  toggleQuickActions() {
+    this.showQuickActions.set(!this.showQuickActions());
+  }
+
   constructor() {
     addIcons({
       gridOutline,
@@ -54,7 +64,11 @@ export class AppComponent {
       settings: settingsOutline,
       videocam: videocamOutline,
       addCircle: addCircleOutline,
-      list: listOutline
+      list: listOutline,
+      close: closeOutline,
+      globe: globeOutline,
+      lockClosed: lockClosedOutline,
+      add: addOutline
     });
   }
 }

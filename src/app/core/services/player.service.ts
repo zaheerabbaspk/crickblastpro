@@ -8,6 +8,7 @@ export interface Player {
     battingStyle: 'Right-handed' | 'Left-handed';
     bowlingStyle: 'Fast' | 'Medium' | 'Spin' | 'None';
     jerseyNumber?: string;
+    photo?: string;
     teams: string[]; // Team IDs
 }
 

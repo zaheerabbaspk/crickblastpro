@@ -1,119 +1,150 @@
 <ion-content>
-    <div class="space-y-8 pb-10">
-        <!-- Quick Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-brand-accent p-6 rounded-[40px] border border-brand-white/5 relative overflow-hidden group">
-                <div
-                    class="absolute -right-4 -top-4 w-24 h-24 bg-brand-red/10 rounded-full blur-3xl group-hover:bg-brand-red/20 transition-all">
-                </div>
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-brand-red/10 flex items-center justify-center text-brand-red">
-                        <ion-icon name="trending-up-outline" class="text-2xl"></ion-icon>
-                    </div>
-                    <div>
-                        <p class="text-brand-white/50 text-xs font-bold uppercase tracking-widest">Total Matches</p>
-                        <p class="text-2xl font-black">24</p>
-                    </div>
-                </div>
-            </div>
+    <div class="space-y-12 pb-24 px-4 lg:px-8 max-w-7xl mx-auto pt-6">
 
-            <!-- More stats can go here -->
-        </div>
-
-        <!-- Quick Actions -->
-        <section>
+        <!-- Premium Highlights Carousel -->
+        <section class="relative">
             <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-bold">Quick Actions</h2>
-            </div>
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                @for (action of quickActions; track action.title) {
-                <a [routerLink]="[action.url]"
-                    class="bg-brand-accent p-6 rounded-[32px] border border-brand-white/5 hover:border-brand-red/30 transition-all group">
-                    <div
-                        [class]="action.color + ' w-12 h-12 rounded-2xl flex items-center justify-center text-white mb-4 shadow-lg shadow-black/20 group-hover:scale-110 transition-transform'">
-                        <ion-icon [name]="action.icon" class="text-2xl"></ion-icon>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500">
+                        <ion-icon name="flash-outline" class="text-xl"></ion-icon>
                     </div>
-                    <h3 class="font-bold text-base">{{ action.title }}</h3>
-                    <p class="text-brand-white/40 text-xs">{{ action.subtitle }}</p>
-                </a>
-                }
+                    <h2 class="text-2xl font-black tracking-tight">MUST WATCH <span
+                            class="text-brand-white/20 ml-2 font-medium">Highlights</span></h2>
+                </div>
             </div>
+
+            <swiper-container class="w-full" slides-per-view="1.2" space-between="20" [breakpoints]="{
+                '640': { slidesPerView: 2.2 },
+                '1024': { slidesPerView: 3.2 }
+            }">
+                @for (clip of highlights; track clip.title) {
+                <swiper-slide>
+                    <div
+                        class="group relative aspect-video rounded-[32px] overflow-hidden border border-brand-white/5 bg-brand-accent shadow-2xl transition-all hover:scale-[1.02] cursor-pointer">
+                        <img [src]="clip.thumbnail"
+                            class="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-brand-dark via-transparent to-transparent">
+                        </div>
+                        <div class="absolute inset-0 p-6 flex flex-col justify-end">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span
+                                    class="px-2 py-0.5 bg-brand-red text-white text-[8px] font-black rounded uppercase tracking-widest">Highlights</span>
+                                <span class="text-[10px] text-brand-white/60 font-medium">{{ clip.duration }}</span>
+                            </div>
+                            <h3 class="text-lg font-bold leading-tight group-hover:text-brand-red transition-colors">{{
+                                clip.title }}</h3>
+                            <p class="text-xs text-brand-white/40 mt-1 line-clamp-1">{{ clip.description }}</p>
+                        </div>
+                        <div
+                            class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div
+                                class="w-16 h-16 rounded-full bg-brand-red/90 text-white flex items-center justify-center shadow-2xl scale-75 group-hover:scale-100 transition-transform">
+                                <ion-icon name="play-outline" class="text-3xl ml-1"></ion-icon>
+                            </div>
+                        </div>
+                    </div>
+                </swiper-slide>
+                }
+            </swiper-container>
         </section>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- Live Matches Section -->
-            <section>
-                <div class="flex items-center justify-between mb-6">
-                    <div class="flex items-center gap-3">
-                        <div class="flex h-3 w-3 relative">
-                            <span
-                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-red opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-3 w-3 bg-brand-red"></span>
-                        </div>
-                        <h2 class="text-xl font-bold">Live Matches</h2>
+        <!-- Trending Public Matches Carousel -->
+        <section>
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">
+                        <ion-icon name="trending-up-outline" class="text-xl"></ion-icon>
                     </div>
-                    <button class="text-brand-red text-sm font-bold flex items-center gap-1 hover:underline">
-                        View All <ion-icon name="chevron-forward-outline"></ion-icon>
-                    </button>
+                    <h2 class="text-2xl font-black tracking-tight">TRENDING NOW <span
+                            class="text-brand-white/20 ml-2 font-medium">Public</span></h2>
                 </div>
+                <button routerLink="/live-matches"
+                    class="text-brand-white/30 text-xs font-black uppercase tracking-widest hover:text-white transition-colors">View
+                    All</button>
+            </div>
 
-                <div class="space-y-4">
-                    @for (match of liveMatches(); track match.id) {
-                    <a [routerLink]="['/match', match.id, 'scoring']"
-                        class="block bg-brand-accent p-6 rounded-[32px] border border-brand-white/5 hover:border-brand-red/30 transition-all group">
-                        <div class="flex justify-between items-start mb-4">
-                            <span class="text-[10px] font-black text-brand-red uppercase tracking-widest">LIVE
-                                NOW</span>
-                            <span class="text-[10px] text-brand-white/30 uppercase font-black">{{ match.format }}</span>
-                        </div>
-                        <h3 class="font-bold text-lg mb-2">{{ match.name }}</h3>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <div
-                                    class="w-8 h-8 rounded-lg bg-brand-dark flex items-center justify-center text-xs font-black">
-                                    A</div>
-                                <span class="text-sm font-bold">vs</span>
-                                <div
-                                    class="w-8 h-8 rounded-lg bg-brand-dark flex items-center justify-center text-xs font-black">
-                                    B</div>
-                            </div>
-                            <button
-                                class="bg-brand-red/10 text-brand-red px-4 py-2 rounded-xl text-xs font-black group-hover:bg-brand-red group-hover:text-white transition-all">
-                                RESUME
-                            </button>
-                        </div>
-                    </a>
-                    } @empty {
-                    <!-- Placeholder/No Matches State -->
-                    <div
-                        class="bg-brand-accent/30 p-10 rounded-[40px] border border-dashed border-brand-white/10 flex flex-col items-center justify-center text-center">
-                        <div
-                            class="w-16 h-16 rounded-full bg-brand-dark flex items-center justify-center text-3xl mb-4 grayscale opacity-50">
-                            🏏
-                        </div>
-                        <h3 class="font-bold text-brand-white/70">No Live Matches</h3>
-                        <p class="text-brand-white/30 text-sm mt-1 max-w-[200px]">Start a match to see live scoring
-                            action here.</p>
+            <swiper-container class="w-full" slides-per-view="1.1" space-between="20" [breakpoints]="{
+                '768': { slidesPerView: 2.1 },
+                '1024': { slidesPerView: 3 }
+            }">
+                @for (match of trendingPublicMatches(); track match.id) {
+                <swiper-slide>
+                    <app-scorecard [data]="match"></app-scorecard>
+                </swiper-slide>
+                }
+            </swiper-container>
+        </section>
+
+        <!-- Official International Matches Carousel -->
+        <section>
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
+                        <ion-icon name="globe-outline" class="text-xl"></ion-icon>
                     </div>
-                    }
+                    <h2 class="text-2xl font-black tracking-tight">OFFICIAL <span
+                            class="text-brand-white/20 ml-2 font-medium">Matches</span></h2>
                 </div>
-            </section>
+            </div>
 
-            <!-- Upcoming Matches -->
-            <section>
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-xl font-bold">Upcoming</h2>
-                    <button class="text-brand-white/50 text-sm font-bold hover:text-white">Calendar</button>
+            <swiper-container class="w-full" slides-per-view="1.1" space-between="20" [breakpoints]="{
+                '768': { slidesPerView: 2.1 },
+                '1024': { slidesPerView: 3 }
+            }">
+                @for (match of officialMatches(); track match.matchName) {
+                <swiper-slide>
+                    <app-scorecard [data]="match"></app-scorecard>
+                </swiper-slide>
+                }
+            </swiper-container>
+        </section>
+
+        <!-- Stats Overview Section -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-8">
+            <div
+                class="lg:col-span-8 bg-brand-accent/50 rounded-[50px] border border-brand-white/5 p-10 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-brand-red/5 rounded-full blur-[100px] -mr-32 -mt-32">
                 </div>
+                <div class="flex items-center justify-between mb-10">
+                    <div>
+                        <h2 class="text-3xl font-black">YOUR PROGRESS</h2>
+                        <p class="text-brand-white/30 text-sm mt-1">Activity over the last 30 days</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-8">
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-black text-brand-white/30 uppercase tracking-[0.2em]">Matches</p>
+                        <p class="text-4xl font-black">128</p>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-black text-brand-white/30 uppercase tracking-[0.2em]">Runs</p>
+                        <p class="text-4xl font-black">4.2K</p>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-black text-brand-white/30 uppercase tracking-[0.2em]">Wickets</p>
+                        <p class="text-4xl font-black">312</p>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-black text-brand-white/30 uppercase tracking-[0.2em]">Tournaments</p>
+                        <p class="text-4xl font-black">04</p>
+                    </div>
+                </div>
+            </div>
 
+            <div routerLink="/match-create"
+                class="lg:col-span-4 bg-brand-red p-10 rounded-[50px] shadow-2xl shadow-brand-red/20 flex flex-col justify-between group cursor-pointer overflow-hidden relative">
                 <div
-                    class="bg-brand-accent rounded-[40px] border border-brand-white/5 divide-y divide-brand-white/5 overflow-hidden">
-                    <div class="p-10 flex flex-col items-center justify-center text-center grayscale opacity-50">
-                        <ion-icon name="calendar-outline" class="text-4xl mb-4"></ion-icon>
-                        <p class="text-sm font-bold">Your schedule is empty</p>
-                    </div>
+                    class="absolute inset-0 bg-black/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500">
                 </div>
-            </section>
-        </div>
+                <div class="relative z-10">
+                    <ion-icon name="timer-outline" class="text-5xl text-white/50 mb-6"></ion-icon>
+                    <h3 class="text-2xl font-black text-white leading-tight">Ready for a<br>Match?</h3>
+                    <p class="text-white/70 text-sm mt-4">The pitch is ready. Create a quick match in seconds.</p>
+                </div>
+                <button
+                    class="relative z-10 w-full py-4 bg-white text-brand-red rounded-3xl font-black tracking-widest mt-8 group-hover:bg-brand-dark group-hover:text-white transition-all">LETS
+                    GO</button>
+            </div>
+        </section>
     </div>
 </ion-content>

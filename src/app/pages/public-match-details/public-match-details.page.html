@@ -1,0 +1,182 @@
+<ion-content>
+    <div class="space-y-8 pb-24 px-4 lg:px-8 max-w-6xl mx-auto pt-6">
+        <!-- Header -->
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a [routerLink]="['/dashboard']"
+                    class="w-12 h-12 flex items-center justify-center rounded-2xl bg-brand-accent text-brand-white hover:bg-brand-accent/80 transition-all">
+                    <ion-icon name="arrow-back-outline" class="text-2xl"></ion-icon>
+                </a>
+                <div>
+                    <h1 class="text-2xl font-bold line-clamp-1">{{ matchDetails().name }}</h1>
+                    <div class="flex items-center gap-4 mt-1">
+                        <span
+                            class="flex items-center gap-1 text-[10px] text-brand-white/40 font-black uppercase tracking-widest">
+                            <ion-icon name="location-outline"></ion-icon>
+                            {{ matchDetails().venue }}
+                        </span>
+                        <span
+                            class="flex items-center gap-1 text-[10px] text-brand-red font-black uppercase tracking-widest">
+                            <ion-icon name="eye-outline"></ion-icon>
+                            {{ matchDetails().views }} Watching
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="bg-brand-red px-6 py-3 rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-brand-red/20 animate-pulse">
+                {{ matchDetails().status }}
+            </div>
+        </div>
+
+        <!-- Main Score Card -->
+        <div class="bg-brand-accent/50 rounded-[50px] border border-brand-white/5 p-10 relative overflow-hidden">
+            <div class="absolute -right-20 -top-20 w-80 h-80 bg-brand-red/5 rounded-full blur-[100px]"></div>
+
+            <div class="flex flex-col md:flex-row items-center justify-between gap-12 relative z-10">
+                <!-- Team A -->
+                <div class="flex-1 flex flex-col items-center gap-6">
+                    <div
+                        class="w-32 h-32 rounded-[40px] bg-brand-dark flex items-center justify-center text-5xl font-black text-brand-red border border-brand-white/10 shadow-2xl">
+                        {{ matchDetails().teamA.shortName }}
+                    </div>
+                    <div class="text-center">
+                        <h2 class="text-2xl font-black">{{ matchDetails().teamA.name }}</h2>
+                        <p class="text-4xl font-black text-brand-red mt-2">{{ matchDetails().teamA.score }}</p>
+                        <p class="text-sm text-brand-white/30 font-bold uppercase tracking-widest mt-1">{{
+                            matchDetails().teamA.overs }} Overs</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-center">
+                    <div class="text-6xl font-black italic text-brand-white/5">VS</div>
+                    <div
+                        class="px-4 py-2 bg-brand-white/5 rounded-full text-[10px] font-black uppercase tracking-widest text-brand-white/30 mt-4">
+                        {{ matchDetails().format }}
+                    </div>
+                </div>
+
+                <!-- Team B -->
+                <div class="flex-1 flex flex-col items-center gap-6">
+                    <div
+                        class="w-32 h-32 rounded-[40px] bg-brand-dark flex items-center justify-center text-5xl font-black text-brand-white border border-brand-white/10 shadow-2xl">
+                        {{ matchDetails().teamB.shortName }}
+                    </div>
+                    <div class="text-center">
+                        <h2 class="text-2xl font-black">{{ matchDetails().teamB.name }}</h2>
+                        <p class="text-4xl font-black text-brand-white/30 mt-2">{{ matchDetails().teamB.score }}</p>
+                        <p class="text-sm text-brand-white/30 font-bold uppercase tracking-widest mt-1">{{
+                            matchDetails().teamB.overs }} Overs</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Roster Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Team A Roster -->
+            <section class="space-y-6">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-brand-red/10 flex items-center justify-center text-brand-red text-xl">
+                        <ion-icon name="shirt-outline"></ion-icon>
+                    </div>
+                    <h3 class="text-xl font-black uppercase tracking-tight">{{ matchDetails().teamA.name }} <span
+                            class="text-brand-white/20 ml-2 font-medium">SQUAD</span></h3>
+                </div>
+
+                <div class="bg-brand-accent/30 rounded-[40px] border border-brand-white/5 overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="bg-brand-white/2">
+                                <th
+                                    class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-brand-white/20">
+                                    Player</th>
+                                <th
+                                    class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-brand-white/20 text-center">
+                                    R</th>
+                                <th
+                                    class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-brand-white/20 text-center">
+                                    B</th>
+                                <th
+                                    class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-brand-white/20 text-right">
+                                    Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-brand-white/5">
+                            @for (player of matchDetails().teamA.players; track player.name) {
+                            <tr class="hover:bg-brand-white/2 transition-colors group">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-8 h-8 rounded-lg bg-brand-dark flex items-center justify-center text-brand-white/30 group-hover:text-brand-red transition-colors">
+                                            <ion-icon name="person-outline"></ion-icon>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-sm">{{ player.name }}</p>
+                                            <p class="text-[9px] text-brand-white/30 uppercase font-black">{{
+                                                player.role }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center font-black">{{ player.runs ?? '-' }}</td>
+                                <td class="px-6 py-4 text-center text-brand-white/30 text-sm font-bold">{{ player.balls
+                                    ?? '-' }}</td>
+                                <td class="px-6 py-4 text-right">
+                                    @if (player.out) {
+                                    <span
+                                        class="text-[9px] font-black uppercase px-2 py-1 bg-brand-red/10 text-brand-red rounded-lg">OUT</span>
+                                    } @else if (player.runs !== undefined) {
+                                    <span
+                                        class="text-[9px] font-black uppercase px-2 py-1 bg-green-500/10 text-green-500 rounded-lg">NOT
+                                        OUT</span>
+                                    } @else {
+                                    <span
+                                        class="text-[9px] font-black uppercase text-brand-white/10 uppercase">Waiting</span>
+                                    }
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Team B Roster -->
+            <section class="space-y-6">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-brand-white/10 flex items-center justify-center text-brand-white text-xl">
+                        <ion-icon name="shirt-outline"></ion-icon>
+                    </div>
+                    <h3 class="text-xl font-black uppercase tracking-tight">{{ matchDetails().teamB.name }} <span
+                            class="text-brand-white/20 ml-2 font-medium">SQUAD</span></h3>
+                </div>
+
+                <div class="bg-brand-accent/30 rounded-[40px] border border-brand-white/5 overflow-hidden">
+                    <div class="grid grid-cols-1 divide-y divide-brand-white/5">
+                        @for (player of matchDetails().teamB.players; track player.name) {
+                        <div class="p-4 flex items-center justify-between hover:bg-brand-white/2 transition-all">
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="w-10 h-10 rounded-xl bg-brand-dark flex items-center justify-center text-brand-white/10">
+                                    <ion-icon name="person-outline" class="text-xl"></ion-icon>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-sm">{{ player.name }}</p>
+                                    <p class="text-[9px] text-brand-white/30 uppercase font-black tracking-widest">{{
+                                        player.role }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1 text-amber-500 opacity-20">
+                                <ion-icon name="star-outline"></ion-icon>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</ion-content>

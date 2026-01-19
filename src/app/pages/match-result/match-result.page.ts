@@ -78,6 +78,12 @@ export class MatchResultPage {
         }
     });
 
+    manOfTheMatchPhoto = computed(() => {
+        const id = this.manOfTheMatchId();
+        if (!id) return '';
+        return this.playerService.getPlayerById(id)?.photo || '';
+    });
+
     constructor() {
         addIcons({ arrowBackOutline, checkmarkCircleOutline, trophyOutline, shareSocialOutline, homeOutline });
         const matchId = this.route.snapshot.paramMap.get('id');

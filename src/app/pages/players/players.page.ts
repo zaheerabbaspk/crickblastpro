@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal, HostListener, computed } from '@angular/core';
 import { UpperCasePipe } from '@angular/common';
 import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { PlayerService, Player } from '../../core/services/player.service';
@@ -24,6 +24,28 @@ import {
 export class PlayersPage {
     private playerService = inject(PlayerService);
     players = this.playerService.players;
+    searchTerm = signal('');
+
+    filteredPlayers = computed(() => {
+        const term = this.searchTerm().toLowerCase();
+        if (!term) return this.players();
+        return this.players().filter(p =>
+            p.fullName.toLowerCase().includes(term) ||
+            p.displayName.toLowerCase().includes(term)
+        );
+    });
+
+    activeMenuId = signal<string | null>(null);
+
+    @HostListener('document:click')
+    closeMenu() {
+        this.activeMenuId.set(null);
+    }
+
+    toggleMenu(event: Event, id: string) {
+        event.stopPropagation();
+        this.activeMenuId.set(this.activeMenuId() === id ? null : id);
+    }
 
     constructor() {
         addIcons({ searchOutline, addOutline, ellipsisVerticalOutline, personOutline, shirtOutline, createOutline, trashOutline, eyeOutline });

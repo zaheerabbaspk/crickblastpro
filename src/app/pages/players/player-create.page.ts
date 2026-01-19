@@ -1,10 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
 import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { PlayerService, Player } from '../../core/services/player.service';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { InputComponent } from '../../shared/components/input/input.component';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, saveOutline, personOutline, shieldOutline, starOutline } from 'ionicons/icons';
+import { arrowBackOutline, saveOutline, personOutline, shieldOutline, starOutline, cameraOutline } from 'ionicons/icons';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -16,14 +16,19 @@ import { FormsModule } from '@angular/forms';
 export class PlayerCreatePage {
     private playerService = inject(PlayerService);
     private router = inject(Router);
+    private route = inject(ActivatedRoute);
 
-    playerData = {
+    isEditMode = false;
+    playerId: string | null = null;
+
+    playerData: any = {
         fullName: '',
         displayName: '',
         role: 'Batsman' as Player['role'],
         battingStyle: 'Right-handed' as Player['battingStyle'],
         bowlingStyle: 'None' as Player['bowlingStyle'],
-        jerseyNumber: ''
+        jerseyNumber: '',
+        photo: ''
     };
 
     roles: Player['role'][] = ['Batsman', 'Bowler', 'All-rounder', 'Wicketkeeper'];
@@ -31,7 +36,26 @@ export class PlayerCreatePage {
     bowlingStyles: Player['bowlingStyle'][] = ['Fast', 'Medium', 'Spin', 'None'];
 
     constructor() {
-        addIcons({ arrowBackOutline, saveOutline, personOutline, shieldOutline, starOutline });
+        addIcons({ arrowBackOutline, saveOutline, personOutline, shieldOutline, starOutline, cameraOutline });
+        this.playerId = this.route.snapshot.paramMap.get('id');
+        if (this.playerId) {
+            this.isEditMode = true;
+            const player = this.playerService.getPlayerById(this.playerId);
+            if (player) {
+                this.playerData = { ...player };
+            }
+        }
+    }
+
+    handlePhotoChange(event: any) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                this.playerData.photo = reader.result as string;
+            };
+            reader.readAsDataURL(file);
+        }
     }
 
     savePlayer() {
@@ -39,7 +63,16 @@ export class PlayerCreatePage {
             alert('Please fill in required fields');
             return;
         }
-        this.playerService.addPlayer(this.playerData);
+
+        if (this.isEditMode && this.playerId) {
+            this.playerService.updatePlayer({
+                ...this.playerData,
+                id: this.playerId
+            } as Player);
+        } else {
+            this.playerService.addPlayer(this.playerData);
+        }
+
         this.router.navigate(['/players']);
     }
 }
